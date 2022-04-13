@@ -12,12 +12,14 @@ namespace CS5410.Objects
         private readonly double m_radius;
         private double lastFire = -1;
         private DateTime lastFireTime;
+        public int level;
 
         public Ranger(Vector2 size, Vector2 center, double fireRate, double rotateRate, double radius) : base(size, center)
         {
             m_fireRate = fireRate;
             m_rotateRate = rotateRate;
             m_radius = radius;
+            level = 1;
         }
 
         public void rotateLeft(GameTime gameTime)

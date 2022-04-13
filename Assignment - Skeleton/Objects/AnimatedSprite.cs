@@ -30,6 +30,17 @@ namespace CS5410.Objects
             set { m_rotation = value; }
         }
 
+        public void setX(int x)
+        {
+            m_center.X = x;
+        }
+
+        public void setY(int y)
+        {
+            m_center.Y = y;
+        }
+
+
 
     }
 }

@@ -13,12 +13,14 @@ namespace CS5410.Objects
         private readonly double m_radius;
         private double lastSwipe = -1;
         private DateTime lastSwipeTime;
+        public int level;
 
         public Fighter(Vector2 size, Vector2 center, double swipeRate, double rotateRate, int radius) : base(size, center)
         {
             m_swipeRate = swipeRate;
             m_rotateRate = rotateRate;
             m_radius = radius;
+            level = 1;
         }
 
         public void rotateLeft(GameTime gameTime)
@@ -90,6 +92,7 @@ namespace CS5410.Objects
             }
             return false;
         }
+
 
     }
 }
