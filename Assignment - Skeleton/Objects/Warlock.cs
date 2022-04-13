@@ -16,6 +16,7 @@ namespace CS5410.Objects
         private DateTime lastFireTime;
         private double lastSwipe = -1;
         private DateTime lastSwipeTime;
+        public int level;
 
         public Warlock(Vector2 size, Vector2 center, double fireRate, double swipeRate, double rotateRate, double missileRadius, double bombRadius) : base(size, center)
         {
@@ -24,6 +25,7 @@ namespace CS5410.Objects
             m_rotateRate = rotateRate;
             m_mradius = missileRadius;
             m_bradius = bombRadius;
+            level = 1;
         }
 
         public void rotateLeft(GameTime gameTime)
