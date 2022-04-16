@@ -1,0 +1,33 @@
+﻿<Properties StartupConfiguration="{8B62173A-2E4D-4C18-8D04-B3A0C26D78C2}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assignment - Skeleton/Menus/GamePlayView.cs">
+    <Files>
+      <File FileName="Assignment - Skeleton/Menus/HelpView.cs" Line="121" Column="1" />
+      <File FileName="Assignment - Skeleton/Menus/HighScoresView.cs" Line="30" Column="14" />
+      <File FileName="Assignment - Skeleton/Menus/GamePlayView.cs" Line="13" Column="2" />
+      <File FileName="Assignment - Skeleton/Objects/Player.cs" />
+      <File FileName="Assignment - Skeleton/Objects/Dragon.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Assignment - Skeleton" expanded="True">
+            <Node name="Assignment - Skeleton" expanded="True">
+              <Node name="Content" expanded="True" />
+              <Node name="Menus" expanded="True">
+                <Node name="GamePlayView.cs" selected="True" />
+              </Node>
+              <Node name="Objects" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.Assignment_220-_220Skeleton PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

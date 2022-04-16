@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Linq;
 
 namespace CS5410
 {
@@ -88,7 +91,21 @@ namespace CS5410
         private Texture2D graph;
         private bool canPlace = true;
         private DateTime errorTime;
-        
+
+        private Objects.ParticleSystem particleSystem;
+        private Texture2D[] particleTextures;
+
+        private Keys[] controlKeys;
+        public const string fileName = "Controls";
+        private bool keysLoaded;
+
+        private double[] highScores;
+        private const string fileName2 = "HighScores";
+
+        // TEMPORARY -- MOVE TO PLAYER CLASS
+        //private double highScore = 10;
+        private Objects.Player player;
+
 
 
 
@@ -99,6 +116,7 @@ namespace CS5410
             rangerLevels = new Texture2D[3];
             warlockLevels = new Texture2D[3];
             errorTime = DateTime.Now;
+            keysLoaded = false;
 
             currLevel = 0;
 
@@ -189,13 +207,59 @@ namespace CS5410
             m_inputMouse.registerCommand(Input.MouseInput.MouseEvent.MouseUp, new Input.InputDeviceHelper.CommandDelegatePosition(onMouseUp));
             m_inputMouse.registerCommand(Input.MouseInput.MouseEvent.MouseMove, new Input.InputDeviceHelper.CommandDelegatePosition(onMouseMove));
 
+            particleTextures = new Texture2D[] {contentManager.Load<Texture2D>("Images/deathParticles"), contentManager.Load<Texture2D>("Images/fireball"), contentManager.Load<Texture2D>("Images/explosion"), contentManager.Load<Texture2D>("Images/eldritchParticle"), contentManager.Load<Texture2D>("Images/eldritchHit"), contentManager.Load<Texture2D>("Images/coinIcon") };
+            particleSystem = new Objects.ParticleSystem(contentManager, particleTextures);
+            // particleSystem.creepDeath(new TimeSpan(0, 0, 0, 0, 100), 500, 500, 25, 2, new TimeSpan(0, 0, 1));
+
+            // load content from controls file
+            // deserialize it from json into keys array
+
+            if (File.Exists(fileName2))
+            {
+                string jsonContents = File.ReadAllText(fileName2);
+                highScores = JsonSerializer.Deserialize<double[]>(jsonContents);
+            }
+            else
+            {
+                highScores = new double[] { 0, 0, 0, 0};
+            }
+
+            player = new Objects.Player(0, 100, new Vector2(32, 32), new Vector2(64, 64));
 
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
+            if (!keysLoaded)
+            {
+                if (File.Exists(fileName))
+                {
+                    string jsonContents = File.ReadAllText(fileName);
+                    controlKeys = JsonSerializer.Deserialize<Keys[]>(jsonContents);
+                }
+                else
+                {
+                    controlKeys = new Keys[] { Keys.U, Keys.S, Keys.G };
+                    File.WriteAllText(fileName, JsonSerializer.Serialize(controlKeys));
+                }
+                keysLoaded = true;
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
+                int lowest = 0;
+                for (int i = 0; i < highScores.Length; i++)
+                {
+                    if(highScores[lowest] > highScores[i])
+                    {
+                        lowest = i;
+                    }
+                   
+                }
+                if (highScores[lowest] < player.getScore())
+                {
+                    highScores[lowest] = player.getScore();
+                }
+                File.WriteAllText(fileName2, JsonSerializer.Serialize(highScores));
                 return GameStateEnum.MainMenu;
             }
             if(Keyboard.GetState().IsKeyDown(Keys.G) && !wasGDown)
@@ -356,6 +420,8 @@ namespace CS5410
                 m_spriteBatch.Draw(fighterLevels[0], new Rectangle((int)fighterButton.Center.X, (int)warlockButton.Center.Y - 450, 250, 250), Color.White);
             }
 
+            particleSystem.draw(m_spriteBatch);
+
             m_spriteBatch.End();
         }
 
@@ -378,6 +444,8 @@ namespace CS5410
             dFRenderer.update(gameTime);
             dDRenderer.update(gameTime);
             m_inputMouse.Update(gameTime);
+
+            particleSystem.update(gameTime);
 
             if((DateTime.Now-errorTime).TotalMilliseconds >= 100)
             {
