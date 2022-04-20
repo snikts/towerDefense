@@ -4,16 +4,18 @@ using System.Text;
 
 namespace CS5410.Objects
 {
-    class GameCell
+    public class GameCell
     {
         public int m_x;
         public int m_y;
         private AnimatedSprite m_gameObject;
+        public int m_distance;
 
-        public GameCell(int x, int y)
+        public GameCell(int x, int y, int distance)
         {
             m_x = x;
             m_y = y;
+            m_distance = distance;
         }
 
         public bool occupied()
@@ -37,5 +39,6 @@ namespace CS5410.Objects
         {
             return m_gameObject;
         }
+
     }
 }

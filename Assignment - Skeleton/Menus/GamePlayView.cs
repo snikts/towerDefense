@@ -86,6 +86,7 @@ namespace CS5410
         private Vector2 placingPos;
         private int currLevel;
         private bool gridOn = false;
+        private bool wasSpaceDown = false;
         private bool wasGDown = false;
 
         private Texture2D graph;
@@ -105,6 +106,20 @@ namespace CS5410
         // TEMPORARY -- MOVE TO PLAYER CLASS
         //private double highScore = 10;
         private Objects.Player player;
+
+        private bool towerPlaced;
+        private List<Objects.GameCell> shortestPath;
+
+        private List<Objects.AnimatedSprite> creeps;
+
+        private int level;
+        private bool levelStarted;
+
+        private List<Vector2> startingLocations;
+        private List<Vector2> endingLocations;
+
+        private DateTime lastCreep;
+        
 
 
 
@@ -151,7 +166,7 @@ namespace CS5410
             warlockButton = new Objects.Warlock(new Vector2(64, 64), new Vector2(m_graphics.PreferredBackBufferWidth - 384 + 96, ((m_graphics.PreferredBackBufferHeight / 6) *3) + 64), 1, 1, 1, 15, 5);
             waBRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/WarlockIdleFixed"), new int[] { 250, 250, 250, 250, 250, 250, 250, 250 });
 
-            goblinWalk = new Objects.Goblin(new Vector2(64, 64), new Vector2(640, 128), 1, 1);
+            goblinWalk = new Objects.Goblin(new Vector2(64, 64), new Vector2(64, 384), 1, 1);
             gWRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/GoblinWalkFixed"), new int[] { 250, 250, 250, 250, 250, 250, 250, 250 });
             goblinDeath = new Objects.Goblin(new Vector2(64, 64), new Vector2(704, 128), 1, 1);
             gDRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/GoblinDeathFixed"), new int[] { 250, 250, 250, 250, 250, 250, 250, 250 });
@@ -198,7 +213,7 @@ namespace CS5410
             {
                 for (int x = 0; x < (m_graphics.PreferredBackBufferWidth-384) / 64; x++)
                 {
-                    board[y, x] = new Objects.GameCell(x * 64, y * 64);
+                    board[y, x] = new Objects.GameCell(x * 64, y * 64, 0);
                 }
             }
 
@@ -226,6 +241,25 @@ namespace CS5410
 
             player = new Objects.Player(0, 100, new Vector2(32, 32), new Vector2(64, 64));
 
+            bool towerPlaced = true;
+            shortestPath = new List<Objects.GameCell>();
+
+            creeps = new List<Objects.AnimatedSprite>();
+            creeps.Add(goblinWalk);
+            //board[goblinWalk.gridY, goblinWalk.gridX].setObject(goblinWalk);
+
+            level = 0;
+
+            startingLocations = new List<Vector2>();
+            startingLocations.Add(new Vector2(0, (m_graphics.PreferredBackBufferHeight / 2) / 64));
+            startingLocations.Add(new Vector2((m_graphics.PreferredBackBufferWidth / 2) / 64, 0));
+
+            endingLocations = new List<Vector2>();
+            endingLocations.Add(new Vector2((m_graphics.PreferredBackBufferWidth - 384) / 64, (m_graphics.PreferredBackBufferHeight / 2) / 64));
+            endingLocations.Add(new Vector2((m_graphics.PreferredBackBufferWidth / 2) / 64, m_graphics.PreferredBackBufferHeight / 64));
+
+            lastCreep = DateTime.Now;
+
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -239,10 +273,11 @@ namespace CS5410
                 }
                 else
                 {
-                    controlKeys = new Keys[] { Keys.U, Keys.S, Keys.G };
+                    controlKeys = new Keys[] { Keys.U, Keys.S, Keys.G, Keys.Space };
                     File.WriteAllText(fileName, JsonSerializer.Serialize(controlKeys));
                 }
                 keysLoaded = true;
+                towerPlaced = true;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
@@ -262,10 +297,20 @@ namespace CS5410
                 File.WriteAllText(fileName2, JsonSerializer.Serialize(highScores));
                 return GameStateEnum.MainMenu;
             }
+            if(Keyboard.GetState().IsKeyDown(Keys.Space) && !wasSpaceDown)
+            {
+                wasSpaceDown = true;
+                gridOn = !gridOn;
+            }
+            else if(wasSpaceDown && !Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                wasSpaceDown = false;
+            }
+
             if(Keyboard.GetState().IsKeyDown(Keys.G) && !wasGDown)
             {
                 wasGDown = true;
-                gridOn = !gridOn;
+                levelStarted = true;
             }
             else if(wasGDown && !Keyboard.GetState().IsKeyDown(Keys.G))
             {
@@ -349,7 +394,7 @@ namespace CS5410
 
             waCRenderer.draw(m_spriteBatch, warlockCast);
             waSRenderer.draw(m_spriteBatch, warlockSwipe);
-            gWRenderer.draw(m_spriteBatch, goblinWalk);
+            //gWRenderer.draw(m_spriteBatch, goblinWalk);
             gDRenderer.draw(m_spriteBatch, goblinDeath);
             hWRenderer.draw(m_spriteBatch, hobgoblinWalk);
             hDRenderer.draw(m_spriteBatch, hobgoblinDeath);
@@ -422,6 +467,11 @@ namespace CS5410
 
             particleSystem.draw(m_spriteBatch);
 
+            for (int i = 0; i < creeps.Count; i++)
+            {
+                gWRenderer.draw(m_spriteBatch, creeps[i]);
+            }
+
             m_spriteBatch.End();
         }
 
@@ -450,6 +500,65 @@ namespace CS5410
             if((DateTime.Now-errorTime).TotalMilliseconds >= 100)
             {
                 canPlace = true;
+            }
+
+            if(towerPlaced)
+            {
+                for (int i = 0; i < creeps.Count; i++)
+                {
+                    findPath(creeps[i]);
+                }
+
+                towerPlaced = false;
+
+            }
+            if (levelStarted)
+            {
+                if((DateTime.Now-lastCreep).TotalSeconds >= 1)
+                {
+                    creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(startingLocations[level].X * 64, startingLocations[level].Y * 64), 1, 1));
+                    findPath(creeps.Last());
+                    lastCreep = DateTime.Now;
+                }
+                for (int i = 0; i < creeps.Count; i++)
+                {
+                    if (creeps[i].location != creeps[i].shortestPath.Count - 1)
+                    {
+                        if (creeps[i].location + 1 > creeps[i].shortestPath.Count)
+                        {
+                            creeps[i].location = 0;
+                            break;
+                        }
+                        else
+                        {
+                            Objects.GameCell next = creeps[i].shortestPath[creeps[i].location + 1];
+                            if (next.m_x > creeps[i].Center.X)
+                            {
+                                creeps[i].increaseX(1);
+                            }
+                            else if (next.m_x < creeps[i].Center.X)
+                            {
+                                creeps[i].increaseX(-1);
+                            }
+                            else if (next.m_y > creeps[i].Center.Y)
+                            {
+                                creeps[i].increaseY(1);
+                            }
+                            else if (next.m_y < creeps[i].Center.Y)
+                            {
+                                creeps[i].increaseY(-1);
+                            }
+                            else
+                            {
+                                creeps[i].location++;
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
             }
 
         }
@@ -497,6 +606,7 @@ namespace CS5410
                     board[row, column].setObject(fighterIdle[fighterIdle.Count - 1]);
 
                     placingFighter = false;
+                    towerPlaced = true;
                 }
                 else
                 {
@@ -516,6 +626,7 @@ namespace CS5410
                     board[row, column].setObject(wizardIdle[wizardIdle.Count - 1]);
 
                     placingWizard = false;
+                    towerPlaced = true;
                 }
                 else
                 {
@@ -535,6 +646,7 @@ namespace CS5410
                     board[row, column].setObject(rangerIdle[rangerIdle.Count - 1]);
 
                     placingRanger = false;
+                    towerPlaced = true;
                 }
                 else
                 {
@@ -554,6 +666,7 @@ namespace CS5410
                     board[row, column].setObject(warlockIdle[warlockIdle.Count - 1]);
 
                     placingWarlock = false;
+                    towerPlaced = true;
                 }
                 else
                 {
@@ -581,6 +694,88 @@ namespace CS5410
                 placingPos = new Vector2(x, y);
             }
 
+        }
+
+        private void findPath(Objects.AnimatedSprite creep)
+        {
+            creep.shortestPath.Clear();
+            Vector2 dest = endingLocations[level];
+            Vector2 start = new Vector2((int)creep.Center.X / 64, (int)creep.Center.Y / 64);
+
+            int dist = (int)(dest.X - start.X) + (int)(dest.Y - start.Y);
+            board[(int)start.Y, (int)start.X].m_distance = dist;
+
+            List<Objects.GameCell> q = new List<Objects.GameCell>();
+            q.Add(board[(int)start.Y, (int)start.X]);
+
+            while (q.Count != 0)
+            {
+                Objects.GameCell curr = q[0];
+                q.RemoveAt(0);
+                if (curr.m_distance > 1)
+                {
+                    if (curr.m_x + 64 < m_graphics.PreferredBackBufferWidth - 384)
+                    {
+                        int x = (curr.m_x + 64) / 64;
+                        int y = curr.m_y / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        {
+                            int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    if (curr.m_x - 64 >= 0)
+                    {
+                        int x = (curr.m_x - 64) / 64;
+                        int y = curr.m_y / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        {
+                            int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    if (curr.m_y - 64 >= 0)
+                    {
+                        int x = (curr.m_x) / 64;
+                        int y = (curr.m_y - 64) / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        {
+                            int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    if (curr.m_y + 64 < 1024)
+                    {
+                        int x = (curr.m_x) / 64;
+                        int y = (curr.m_y + 64) / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        {
+                            int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    creep.shortestPath.Add(curr);
+                    q = q.OrderBy(g => g.m_distance).ToList();
+                    // if right cell exists, is empty, and is not in queue
+                    // calculate dist and add to q
+                    // if left cell exists, is empty, and is not in queue
+                    // calculate dist and add to q
+                    // if upper cell exists, is empty, and is not in queue
+                    // calculate dist and add to q
+                    // if lower cell exists, is empty, and is not in queue
+                    // calculate dist and add to q
+                }
+                else
+                {
+                    creep.shortestPath.Add(curr);
+                    break;
+                }
+
+            }
         }
     }
 }

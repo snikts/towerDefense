@@ -1,82 +1,3 @@
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Assignment - Skeleton.exe
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Assignment - Skeleton.deps.json
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Assignment - Skeleton.runtimeconfig.json
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Assignment - Skeleton.runtimeconfig.dev.json
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Assignment - Skeleton.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Assignment - Skeleton.pdb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/MonoGame.Framework.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/linux-x64/native/libSDL2-2.0.so.0
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/linux-x64/native/libopenal.so.1
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/osx/native/libSDL2-2.0.0.dylib
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/osx/native/libopenal.1.dylib
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/win-x64/native/SDL2.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/win-x64/native/soft_oal.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/win-x86/native/SDL2.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/runtimes/win-x86/native/soft_oal.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.AssemblyInfoInputs.cache
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.AssemblyInfo.cs
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.csproj.CoreCompileInputs.cache
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.csproj.CopyComplete
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.dll
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.pdb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.genruntimeconfig.cache
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Fonts/Alkhemikal.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.csprojAssemblyReference.cache
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/menuBackground.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Fonts/Quiapo_Free.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/title.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/knightPoster.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/rangerPoster.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/wizardPoster.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/woodBackground.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/noticeBoard.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/journal.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterIdle.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterSwipe.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterIdleFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterIdleFixed2.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterIdle2.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterFixed3.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/FighterSwipeFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/WizardIdle.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/WizardIdleFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/WizardCastFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/RangerIdleFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/RangerShootFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/WarlockIdleFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/WarlockCastFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/WarlockSwipeFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/Goblin2Walk.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/Goblin2Death.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/GoblinWalk.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/GoblinDeath.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/DragonFlyFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/DragonDeathFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/Goblin2WalkFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/GoblinWalkFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/GoblinDeathFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/HobGoblinWalkFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/HobGoblinDeathFixed.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/Grass.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/walls.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/pillar.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/coinIcon.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/fighter1.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/fighter2.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/fighter3.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/ranger1.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/ranger2.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/ranger3.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/warlock1.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/warlock2.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/warlock3.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/wizard1.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/wizard2.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/wizard3.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/woodBack.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/fighter1Radius.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/gridpiece.xnb
-C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/errorRadius.xnb
 /Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/journal.xnb
 /Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/knightPoster.xnb
 /Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/bin/Debug/netcoreapp3.1/Content/Images/rangerPoster.xnb
@@ -167,3 +88,93 @@ C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/bin/Debug/netcor
 /Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.dll
 /Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.pdb
 /Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/obj/Debug/netcoreapp3.1/Assignment - Skeleton.genruntimeconfig.cache
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\journal.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\knightPoster.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\rangerPoster.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\wizardPoster.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Fonts\Alkhemikal.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Fonts\Quiapo_Free.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\arrow.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\coinIcon.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\deathParticles.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\DragonDeathFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\DragonFlyFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\eldritchBlast.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\eldritchHit.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\eldritchParticle.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\errorRadius.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\explosion.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\fighter1.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\fighter1Radius.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\fighter2.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\fighter3.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterFixed3.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterIdle.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterIdle2.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterIdleFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterIdleFixed2.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterSwipe.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\FighterSwipeFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\fireball.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\fireParticles.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\Goblin2Death.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\Goblin2Walk.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\Goblin2WalkFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\GoblinDeath.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\GoblinDeathFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\GoblinWalk.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\GoblinWalkFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\Grass.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\gridpiece.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\HobGoblinDeathFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\HobGoblinWalkFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\menuBackground.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\missileParticles.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\noticeBoard.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\pillar.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\projectileHit.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\ranger1.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\ranger2.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\ranger3.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\RangerIdleFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\RangerShootFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\swordSlash.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\title.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\walls.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\warlock1.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\warlock2.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\warlock3.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\WarlockCastFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\WarlockIdleFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\WarlockSwipeFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\wizard1.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\wizard2.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\wizard3.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\WizardCastFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\WizardIdle.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\WizardIdleFixed.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\woodBack.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Content\Images\woodBackground.xnb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Assignment - Skeleton.exe
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Assignment - Skeleton.deps.json
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Assignment - Skeleton.runtimeconfig.json
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Assignment - Skeleton.runtimeconfig.dev.json
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Assignment - Skeleton.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\Assignment - Skeleton.pdb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\MonoGame.Framework.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\linux-x64\native\libSDL2-2.0.so.0
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\linux-x64\native\libopenal.so.1
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\osx\native\libSDL2-2.0.0.dylib
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\osx\native\libopenal.1.dylib
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\SDL2.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\soft_oal.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\SDL2.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\soft_oal.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.AssemblyInfoInputs.cache
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.AssemblyInfo.cs
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.csproj.CoreCompileInputs.cache
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.csproj.CopyComplete
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.dll
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.pdb
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.genruntimeconfig.cache
+C:\Users\Sarah\Downloads\TowerDefenseGame\Assignment - Skeleton\obj\Debug\netcoreapp3.1\Assignment - Skeleton.csprojAssemblyReference.cache

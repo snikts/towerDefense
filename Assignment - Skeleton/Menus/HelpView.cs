@@ -15,8 +15,9 @@ namespace CS5410
         private string UPGRADEMESSAGE = "UPGRADE TOWER: ";
         private string SELLMESSAGE = "SELL TOWER: ";
         private string STARTLEVEL = "START LEVEL: ";
+        private string GRIDMESSAGE = "DISPLAY GRID: ";
         private const string CHANGING = "Changing Key! Select a new key to use.";
-        private Keys[] controlKeys = new Keys[] {Keys.U, Keys.S, Keys.G};
+        private Keys[] controlKeys = new Keys[] {Keys.U, Keys.S, Keys.G, Keys.Space};
         public const string fileName = "Controls";
         private bool m_waitForKeyRelease = false;
         private bool listening = false;
@@ -27,7 +28,8 @@ namespace CS5410
         {
             Upgrade = 0,
             Sell = 1,
-            Start = 2
+            Start = 2,
+            Grid = 3
         }
         private MenuState m_currentSelection = MenuState.Upgrade;
 
@@ -112,6 +114,7 @@ namespace CS5410
                 m_currentSelection == MenuState.Sell ? Color.Yellow : Color.Blue);
             //bottom = drawMenuItem(m_currentSelection == MenuState.Upgrade ? m_font : m_font, UPGRADEMESSAGE, bottom, m_currentSelection == MenuState.Upgrade ? Color.White : Color.Black);
             bottom = drawMenuItem(m_currentSelection == MenuState.Start ? m_font : m_font, STARTLEVEL + controlKeys[2].ToString(), bottom, m_currentSelection == MenuState.Start ? Color.Yellow : Color.Blue);
+            bottom = drawMenuItem(m_currentSelection == MenuState.Grid ? m_font : m_font, GRIDMESSAGE + controlKeys[3].ToString(), bottom, m_currentSelection == MenuState.Grid ? Color.Yellow : Color.Blue);
             //bottom = drawMenuItem(m_currentSelection == MenuState.About ? m_fontMenuSelect : m_fontMenu, "About", bottom, m_currentSelection == MenuState.About ? Color.White : Color.Black);
             //drawMenuItem(m_currentSelection == MenuState.Quit ? m_fontMenuSelect : m_fontMenu, "Quit", bottom, m_currentSelection == MenuState.Quit ? Color.White : Color.Black);
 

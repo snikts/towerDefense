@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace CS5410.Objects
 {
@@ -8,10 +9,15 @@ namespace CS5410.Objects
         protected Vector2 m_center;
         protected float m_rotation = 0;
 
+        public int location;
+        public List<GameCell> shortestPath;
+
         public AnimatedSprite(Vector2 size, Vector2 center)
         {
             m_size = size;
             m_center = center;
+            location = 0;
+            shortestPath = new List<GameCell>();
         }
 
         public Vector2 Size
@@ -38,6 +44,21 @@ namespace CS5410.Objects
         public void setY(int y)
         {
             m_center.Y = y;
+        }
+
+        public void increaseX(int x)
+        {
+            m_center.X = m_center.X + x;
+        }
+
+        public void increaseY(int y)
+        {
+            m_center.Y = m_center.Y + y;
+        }
+
+        public List<GameCell> getPath()
+        {
+            return shortestPath;
         }
 
 
