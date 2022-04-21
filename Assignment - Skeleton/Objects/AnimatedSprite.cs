@@ -12,12 +12,15 @@ namespace CS5410.Objects
         public int location;
         public List<GameCell> shortestPath;
 
+        public int level;
+
         public AnimatedSprite(Vector2 size, Vector2 center)
         {
             m_size = size;
             m_center = center;
             location = 0;
             shortestPath = new List<GameCell>();
+            level = 1;
         }
 
         public Vector2 Size

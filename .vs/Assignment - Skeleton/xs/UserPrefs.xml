@@ -2,10 +2,15 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="Assignment - Skeleton/Menus/GamePlayView.cs">
     <Files>
       <File FileName="Assignment - Skeleton/Menus/HelpView.cs" Line="121" Column="1" />
-      <File FileName="Assignment - Skeleton/Menus/HighScoresView.cs" Line="30" Column="14" />
-      <File FileName="Assignment - Skeleton/Menus/GamePlayView.cs" Line="13" Column="2" />
-      <File FileName="Assignment - Skeleton/Objects/Player.cs" />
+      <File FileName="Assignment - Skeleton/Menus/HighScoresView.cs" />
+      <File FileName="Assignment - Skeleton/Menus/GamePlayView.cs" Line="527" Column="30" />
+      <File FileName="Assignment - Skeleton/Objects/Player.cs" Line="37" Column="1" />
       <File FileName="Assignment - Skeleton/Objects/Dragon.cs" />
+      <File FileName="Assignment - Skeleton/Objects/GameCell.cs" Line="41" Column="1" />
+      <File FileName="Assignment - Skeleton/Objects/AnimatedSprite.cs" Line="23" Column="23" />
+      <File FileName="Assignment - Skeleton/SpriteRenderer.cs" />
+      <File FileName="Assignment - Skeleton/Objects/Fighter.cs" Line="22" Column="39" />
+      <File FileName="Assignment - Skeleton/Objects/Wizard.cs" Line="17" Column="27" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

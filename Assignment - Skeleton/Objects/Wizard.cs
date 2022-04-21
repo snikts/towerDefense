@@ -8,19 +8,21 @@ namespace CS5410.Objects
     class Wizard : AnimatedSprite
     {
 
-        private readonly double m_fireRate;
+        public double m_fireRate;
         private readonly double m_rotateRate;
-        private readonly double m_radius;
+        public double m_radius;
         private double lastFire = -1;
         private DateTime lastFireTime;
-        public int level;
+        //public int level;
+        public int damage;
 
         public Wizard(Vector2 size, Vector2 center, double fireRate, double rotateRate, double radius) : base(size, center)
         {
             m_fireRate = fireRate;
             m_rotateRate = rotateRate;
             m_radius = radius;
-            level = 1;
+            //level = 1;
+            damage = 10;
         }
 
         public void rotateLeft(GameTime gameTime)

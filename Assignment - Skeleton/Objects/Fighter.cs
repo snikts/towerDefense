@@ -8,19 +8,21 @@ namespace CS5410.Objects
     class Fighter : AnimatedSprite
     {
 
-        private readonly double m_swipeRate;
+        public double m_swipeRate;
         private readonly double m_rotateRate;
-        private readonly double m_radius;
+        public double m_radius;
+        public int damage;
         private double lastSwipe = -1;
         private DateTime lastSwipeTime;
-        public int level;
+        //public int level;
 
         public Fighter(Vector2 size, Vector2 center, double swipeRate, double rotateRate, int radius) : base(size, center)
         {
             m_swipeRate = swipeRate;
             m_rotateRate = rotateRate;
             m_radius = radius;
-            level = 1;
+            damage = 10;
+            //level = 1;
         }
 
         public void rotateLeft(GameTime gameTime)
