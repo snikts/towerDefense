@@ -8,12 +8,14 @@ namespace CS5410.Objects
     class Goblin : AnimatedSprite
     {
         private readonly int m_moveRate;
-        private readonly int m_health;
+        //public int m_health;
         
-        public Goblin(Vector2 size, Vector2 center, int moveRate, int health) : base(size, center)
+        public Goblin(Vector2 size, Vector2 center, int moveRate, int health) : base(size, center, 0, health)
         {
             m_moveRate = moveRate;
-            m_health = health;
+            //m_health = health;
         }
+
+
     }
 }

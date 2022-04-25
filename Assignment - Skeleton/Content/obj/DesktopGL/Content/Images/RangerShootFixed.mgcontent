@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>/Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/Content/Images/RangerShootFixed.png</SourceFile>
-  <SourceTime>2022-04-13T13:04:03.4919225-06:00</SourceTime>
-  <DestFile>/Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/Content/bin/DesktopGL/Content/Images/RangerShootFixed.xnb</DestFile>
-  <DestTime>2022-04-20T12:12:10.174812-06:00</DestTime>
+  <SourceFile>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/RangerShootFixed.png</SourceFile>
+  <SourceTime>2022-04-07T13:11:59.1903902-06:00</SourceTime>
+  <DestFile>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/bin/DesktopGL/Content/Images/RangerShootFixed.xnb</DestFile>
+  <DestTime>2022-04-21T12:08:46.2145174-06:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54-06:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

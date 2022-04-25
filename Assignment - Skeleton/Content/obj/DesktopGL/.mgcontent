@@ -6,7 +6,11 @@
   <SourceFiles>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Fonts/Alkhemikal.spritefont</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Fonts/Quiapo_Free.spritefont</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/100.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/200.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/300.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/arrow.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/BarBackground.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/coinIcon.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/deathParticles.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/DragonDeathFixed.png</File>
@@ -37,6 +41,7 @@
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/GoblinWalk.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/GoblinWalkFixed.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/Grass.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/GreenBar.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/gridpiece.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/HobGoblinDeathFixed.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/HobGoblinWalkFixed.png</File>
@@ -44,12 +49,15 @@
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/missileParticles.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/noticeBoard.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/pillar.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/Pointer.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/projectileHit.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/ranger1.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/ranger2.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/ranger3.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/RangerIdleFixed.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/RangerShootFixed.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/RedBar.png</File>
+    <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/selected.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/swordSlash.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/title.png</File>
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/walls.png</File>
@@ -69,6 +77,14 @@
     <File>C:/Users/Sarah/Downloads/TowerDefenseGame/Assignment - Skeleton/Content/Images/woodBackground.jpg</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

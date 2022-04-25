@@ -27,6 +27,13 @@ namespace CS5410
         private Texture2D errorRadius;
         private Texture2D graph;
         private Texture2D[] particleTextures;
+        private Texture2D selected;
+        private Texture2D healthbar;
+        private Texture2D greenBar;
+        private Texture2D redBar;
+        private Texture2D goblinScore;
+        private Texture2D hobgoblinScore;
+        private Texture2D dragonScore;
 
         // declare animated sprite objects
         private List<Objects.AnimatedSprite> fighterIdle;
@@ -39,6 +46,7 @@ namespace CS5410
         private Objects.AnimatedSprite warlockButton;
         private List<Objects.AnimatedSprite> creeps;
         private Objects.AnimatedSprite clicked;
+        private List<Objects.AnimatedSprite> scores;
 
         // declare sprite renderers
         private SpriteRenderer fBRenderer;
@@ -60,6 +68,10 @@ namespace CS5410
         private SpriteRenderer hDRenderer;
         private SpriteRenderer dFRenderer;
         private SpriteRenderer dDRenderer;
+        private SpriteRenderer pointerRenderer;
+        private SpriteRenderer renderer100;
+        private SpriteRenderer renderer200;
+        private SpriteRenderer renderer300;
 
         // declare booleans used during gameplay
         private bool placingFighter;
@@ -75,6 +87,8 @@ namespace CS5410
         private bool levelStarted;
         private bool wasUDown;
         private bool upgrading;
+        private bool wasSDown;
+        private bool selling;
 
         // declare gameboard
         private Objects.GameCell[,] board;
@@ -134,6 +148,13 @@ namespace CS5410
             errorRadius = contentManager.Load<Texture2D>("Images/errorRadius");
             graph = contentManager.Load<Texture2D>("Images/gridpiece");
             particleTextures = new Texture2D[] { contentManager.Load<Texture2D>("Images/deathParticles"), contentManager.Load<Texture2D>("Images/fireball"), contentManager.Load<Texture2D>("Images/explosion"), contentManager.Load<Texture2D>("Images/eldritchParticle"), contentManager.Load<Texture2D>("Images/eldritchHit"), contentManager.Load<Texture2D>("Images/coinIcon") };
+            selected = contentManager.Load<Texture2D>("Images/selected");
+            healthbar = contentManager.Load<Texture2D>("Images/BarBackground");
+            greenBar = contentManager.Load<Texture2D>("Images/GreenBar");
+            redBar = contentManager.Load<Texture2D>("Images/RedBar");
+            goblinScore = contentManager.Load<Texture2D>("Images/100");
+            hobgoblinScore = contentManager.Load<Texture2D>("Images/200");
+            dragonScore = contentManager.Load<Texture2D>("Images/300");
 
             // load animated sprite assets
             fighterIdle = new List<Objects.AnimatedSprite>();
@@ -145,6 +166,7 @@ namespace CS5410
             warlockIdle = new List<Objects.AnimatedSprite>();
             warlockButton = new Objects.Warlock(new Vector2(64, 64), new Vector2(m_graphics.PreferredBackBufferWidth - 384 + 96, ((m_graphics.PreferredBackBufferHeight / 6) * 3) + 64), 1, 1, 1, 15, 5);
             creeps = new List<Objects.AnimatedSprite>();
+            scores = new List<Objects.AnimatedSprite>();
 
             // load renderer assets
             fIRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/FighterFixed3"), new int[] { 250, 250, 250, 250, 250, 250, 250, 250, 250 });
@@ -166,6 +188,7 @@ namespace CS5410
             hDRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/HobGoblinDeathFixed"), new int[] { 250, 250, 250, 250, 250, 250, 250 });
             dFRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/DragonFlyFixed"), new int[] { 250, 250, 250, 250, 250, 250, 250, 250 });
             dDRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/DragonDeathFixed"), new int[] { 250, 250, 250, 250, 250 });
+            pointerRenderer = new SpriteRenderer(contentManager.Load<Texture2D>("Images/Pointer"), new int[] { 50, 50, 50, 50, 50, 50, 50, 50, 50, 50 });
 
             // initialize gameplay booleans
             keysLoaded = false;
@@ -176,14 +199,20 @@ namespace CS5410
             wasSpaceDown = false;
             wasGDown = false;
             canPlace = true;
+            wasSDown = false;
+            selling = false;
 
             // initialize gameboard
             board = new Objects.GameCell[10, 10];
-            for (int y = 0; y < 10; y++)
+            for (int y = 3; y < 14; y++)
             {
-                for (int x = 0; x < 10; x++)
+                for (int x = 3; x < 14; x++)
                 {
-                    board[y, x] = new Objects.GameCell(x * 64, y * 64, 0);
+                    int originx = x * 64;
+                    int originy = y * 64;
+                    int centerx = originx + 32;
+                    int centery = originy + 32;
+                    board[y, x] = new Objects.GameCell(originx, originy, centerx, centery, 0);
                 }
             }
 
@@ -222,6 +251,7 @@ namespace CS5410
             endingLocations.Add(new Vector2(5, 9)); // add vector for level 2 destination
             lastCreep = DateTime.Now; // initialize the last time a creep entered the stage to now
             clicked = null; // initialize our currently clicked object to nothing
+            creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery + 64), 1, 50));
 
         }
 
@@ -297,6 +327,17 @@ namespace CS5410
                 wasUDown = false;
             }
 
+            // if s is pressed and wasn't previously down, indicate that we are upgrading a tower
+            if (Keyboard.GetState().IsKeyDown(Keys.S) && !wasSDown)
+            {
+                wasSDown = true;
+                selling = true;
+            }
+            else if (wasSDown && !Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                wasSDown = false;
+            }
+
             return GameStateEnum.GamePlay;
         }
 
@@ -339,7 +380,7 @@ namespace CS5410
             // draw all fighter towers
             for (int i = 0; i < fighterIdle.Count; i++)
             {
-                fIRenderer.draw(m_spriteBatch, fighterIdle[i]);
+            fIRenderer.draw(m_spriteBatch, fighterIdle[i]);
             }
 
             // draw all wizard towers
@@ -389,22 +430,22 @@ namespace CS5410
             {
                 if (canPlace)
                 {
-                    m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 64, (int)placingPos.Y - 64, 128, 128), Color.White);
+                    m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 96, (int)placingPos.Y - 96, 192, 192), Color.White);
                 }
                 else
                 {
-                    m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 64, (int)placingPos.Y - 64, 128, 128), Color.White);
+                    m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 96, (int)placingPos.Y - 96, 192, 192), Color.White);
                 }
             }
             else if(placingWizard)
             {
                 if (canPlace)
                 {
-                    m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 96, (int)placingPos.Y - 96, 192, 192), Color.White);
+                    m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 160, (int)placingPos.Y - 160, 320, 320), Color.White);
                 }
                 else
                 {
-                    m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 96, (int)placingPos.Y - 96, 192, 192), Color.White);
+                    m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 160, (int)placingPos.Y - 160, 320, 320), Color.White);
                 }
             }
             else if(placingRanger)
@@ -423,7 +464,7 @@ namespace CS5410
                 if (canPlace)
                 {
                     m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 192, (int)placingPos.Y - 192, 384, 384), Color.Green);
-                    m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 64, (int)placingPos.Y - 64, 128, 128), Color.White);
+                    m_spriteBatch.Draw(radius, new Rectangle((int)placingPos.X - 96, (int)placingPos.Y - 96, 192, 192), Color.White);
                 }
                 else
                 {
@@ -440,7 +481,76 @@ namespace CS5410
             // draw all our creeps
             for (int i = 0; i < creeps.Count; i++)
             {
+
+                m_spriteBatch.Draw(healthbar, new Rectangle((int)creeps[i].Center.X-70, (int)creeps[i].Center.Y - 96, 32, 16), Color.White);
+                double percentage = (double)creeps[i].m_health / (double)50;
+                if(percentage >= .5)
+                {
+                    m_spriteBatch.Draw(greenBar, new Rectangle((int)creeps[i].Center.X - 70, (int)creeps[i].Center.Y - 96, (int)(32*percentage), 16), Color.White);
+                }
+                else
+                {
+                    m_spriteBatch.Draw(redBar, new Rectangle((int)creeps[i].Center.X - 70, (int)creeps[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
+                }
                 gWRenderer.draw(m_spriteBatch, creeps[i]);
+            }
+
+            // if our clicked object is not null, highlight it's square
+            if(clicked != null)
+            {
+                m_spriteBatch.Draw(selected, new Rectangle((int)clicked.Center.X-64, (int)clicked.Center.Y-64, 64, 64), Color.Red);
+                if(clicked is Objects.Fighter)
+                {
+                    m_spriteBatch.Draw(fighterLevels[clicked.level - 1], new Rectangle((int)warlockButton.Center.X, (int)warlockButton.Center.Y + 100, 250, 250), Color.White);
+                }
+                else if (clicked is Objects.Wizard)
+                {
+                    m_spriteBatch.Draw(wizardLevels[clicked.level - 1], new Rectangle((int)warlockButton.Center.X, (int)warlockButton.Center.Y + 100, 250, 250), Color.White);
+                }
+                else if (clicked is Objects.Ranger)
+                {
+                    m_spriteBatch.Draw(rangerLevels[clicked.level - 1], new Rectangle((int)warlockButton.Center.X, (int)warlockButton.Center.Y + 100, 250, 250), Color.White);
+                }
+                else if (clicked is Objects.Warlock)
+                {
+                    m_spriteBatch.Draw(warlockLevels[clicked.level - 1], new Rectangle((int)warlockButton.Center.X, (int)warlockButton.Center.Y + 100, 250, 250), Color.White);
+                }
+            }
+
+            if(!levelStarted)
+            {
+                if (startingLocations[level].X == 0)
+                {
+                    Objects.AnimatedSprite pointer = new Objects.AnimatedSprite(new Vector2(32, 32), new Vector2((startingLocations[level].X + 1) * 64, (startingLocations[level].Y * 64)+48), 0, 0);
+                    pointer.Rotation = (float)Math.PI;
+                    pointerRenderer.draw(m_spriteBatch, pointer);
+                }
+                else if(startingLocations[level].Y == 0)
+                {
+                    Objects.AnimatedSprite pointer = new Objects.AnimatedSprite(new Vector2(32, 32), new Vector2((startingLocations[level].X * 64)+48, (startingLocations[level].Y+1) * 64), 0, 0);
+                    pointer.Rotation = (float)(Math.PI/2);
+                    pointerRenderer.draw(m_spriteBatch, pointer);
+                }
+            }
+
+            for (int i = 0; i < scores.Count; i++)
+            {
+                if (((Objects.Score)scores[i]).m_value == 100)
+                {
+                    m_spriteBatch.Draw(goblinScore, new Rectangle((int)scores[i].Center.X - 96, (int)scores[i].Center.Y - 96, 64, 64), Color.White);
+                }
+                if (((Objects.Score)scores[i]).m_value == 200)
+                {
+                    m_spriteBatch.Draw(hobgoblinScore, new Rectangle((int)scores[i].Center.X - 96, (int)scores[i].Center.Y - 96, 64, 64), Color.White);
+                }
+                if (((Objects.Score)scores[i]).m_value == 300)
+                {
+                    m_spriteBatch.Draw(dragonScore, new Rectangle((int)scores[i].Center.X - 96, (int)scores[i].Center.Y - 96, 64, 64), Color.White);
+                }
+                if (!((Objects.Score)scores[i]).move())
+                {
+                    scores.RemoveAt(i);
+                }
             }
 
             m_spriteBatch.End();
@@ -454,6 +564,7 @@ namespace CS5410
             rIRenderer.update(gameTime);
             waIRenderer.update(gameTime);
             gWRenderer.update(gameTime);
+            pointerRenderer.update(gameTime);
 
             // update our mouse input
             m_inputMouse.Update(gameTime);
@@ -469,7 +580,7 @@ namespace CS5410
             {
                 for (int i = 0; i < creeps.Count; i++)
                 {
-                    findPath(creeps[i]);
+                    findPath2(creeps[i]);
                 }
 
                 towerPlaced = false;
@@ -482,15 +593,19 @@ namespace CS5410
                 // if our last creep came in over a second ago, add a new creep
                 if ((DateTime.Now - lastCreep).TotalSeconds >= 1)
                 {
-                    creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2((startingLocations[level].X * 64) + 32, (startingLocations[level].Y * 64) + 32), 1, 1));
-                    findPath(creeps.Last());
+                    creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery+64), 1, 50));
+                    findPath2(creeps.Last());
                     lastCreep = DateTime.Now;
                 }
                 // for each of our creeps, move
                 for (int i = 0; i < creeps.Count; i++)
                 {
+                    if(creeps[i].Center.X == 63)
+                    {
+
+                    }
                     // if our creep has not reached the last element of the path
-                    if (creeps[i].location != creeps[i].shortestPath.Count - 1)
+                    if (creeps[i].location != creeps[i].shortestPath.Count-1)
                     {
                         // if the creep's location is greater than our shortest path, we have recomputed the path. break and set location to 0
                         if (creeps[i].location + 1 > creeps[i].shortestPath.Count)
@@ -503,29 +618,288 @@ namespace CS5410
                             // get the creep's next cell to go to
                             Objects.GameCell next = creeps[i].shortestPath[creeps[i].location + 1];
                             // if our next cell has a greater x, increase our creep's x
-                            if (next.m_x > creeps[i].Center.X)
+                            if (next.m_centerx > creeps[i].Center.X)
                             {
-                                creeps[i].increaseX(1);
+                                double left = (2 * Math.PI) - creeps[i].Rotation;
+                                if (creeps[i].Rotation >= 0 + .5 || creeps[i].Rotation <= 0 - .5)
+                                {
+                                    if (left < creeps[i].Rotation)
+                                    {
+                                        creeps[i].Rotation += .1f;
+                                        if(creeps[i].Rotation >= (2*Math.PI)+.5 || creeps[i].Rotation >= (2*Math.PI)-.5)
+                                        {
+                                            creeps[i].Rotation = 0;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        creeps[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    creeps[i].increaseX(1);
+                                }
+                                //creeps[i].Rotation = 0;
                             }
                             // if our next cell has a smaller x, decrease our creeps x
-                            else if (next.m_x < creeps[i].Center.X)
+                            if (next.m_centerx < creeps[i].Center.X)
                             {
-                                creeps[i].increaseX(-1);
+                                double left = (Math.PI) - creeps[i].Rotation;
+                                double right = creeps[i].Rotation - Math.PI;
+                                if (creeps[i].Rotation >= Math.PI + .5 || creeps[i].Rotation <= Math.PI - .5)
+                                {
+                                    if (left < right)
+                                    {
+                                        creeps[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        creeps[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    creeps[i].increaseX(-1);
+                                }
                             }
                             // if our next cell has a greater y, increase our creeps y
-                            else if (next.m_y > creeps[i].Center.Y)
+                            if (next.m_centery > creeps[i].Center.Y-64)
                             {
-                                creeps[i].increaseY(1);
+                                double left = ((Math.PI)/2) - creeps[i].Rotation;
+                                double right = creeps[i].Rotation - ((Math.PI) / 2);
+                                if (creeps[i].Rotation >= ((Math.PI) / 2) + .5 || creeps[i].Rotation <= ((Math.PI) / 2) - .5)
+                                {
+                                    if (right < left)
+                                    {
+                                        creeps[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        creeps[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    creeps[i].increaseY(1);
+                                }
                             }
                             // if our next cell has a smaller y, decrease our creeps y
-                            else if (next.m_y < creeps[i].Center.Y)
+                            if (next.m_centery < creeps[i].Center.Y-64)
                             {
-                                creeps[i].increaseY(-1);
+                                if (creeps[i].Rotation == 0)
+                                {
+                                    creeps[i].Rotation = (float)(2 * Math.PI);
+                                }
+                                double left = ((3*Math.PI) / 2) - creeps[i].Rotation;
+                                double right = creeps[i].Rotation - ((3*Math.PI) / 2);
+                                if (creeps[i].Rotation >= ((3*Math.PI) / 2) + .5 || creeps[i].Rotation <= ((3*Math.PI) / 2) - .5)
+                                {
+                                    if (right < left)
+                                    {
+                                        creeps[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        creeps[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    creeps[i].increaseY(-1);
+                                }
                             }
                             // otherwise, our creep has reached the next cell, update it's location in our path
-                            else
+                            if(next.m_centerx == creeps[i].Center.X && next.m_centery == creeps[i].Center.Y-64)
                             {
                                 creeps[i].location++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        creeps.RemoveAt(i);
+                    }
+                }
+                for (int i = 0; i < fighterIdle.Count; i++)
+                {
+                    if (findTarget(fighterIdle[i]))
+                    {
+                        double angle;
+                        if (fighterIdle[i].target.Center.X < fighterIdle[i].Center.X)
+                        {
+                            angle = (float)(Math.PI);
+                        }
+                        else
+                        {
+                            angle = AngleBetween(fighterIdle[i].Center, fighterIdle[i].target.Center);
+                        }
+                        if (fighterIdle[i].Rotation >= angle + .5 || fighterIdle[i].Rotation <= angle - .5)
+                        {
+                            fighterIdle[i].Rotation += .1f;
+                            if (fighterIdle[i].Rotation <= (2 * Math.PI) + .5 && fighterIdle[i].Rotation >= (2 * Math.PI) - .5)
+                            {
+                                fighterIdle[i].Rotation = 0;
+                            }
+                        }
+                        if (((Objects.Fighter)fighterIdle[i]).canSwipe())
+                        {
+                            if(fighterIdle[i].Rotation <= angle + .5 && fighterIdle[i].Rotation >= angle - .5)
+                            {
+                                fighterIdle[i].target.m_health -= ((Objects.Fighter)fighterIdle[i]).damage;
+                            }
+                            if (fighterIdle[i].target.m_health <= 0)
+                            {
+                                scores.Add(new Objects.Score(new Vector2(16, 16), fighterIdle[i].target.Center, 100));
+                                player.addToScore(100);
+                                creeps.Remove(fighterIdle[i].target);
+                                fighterIdle[i].target = null;
+
+                            }
+                        }
+                    }
+                }
+                for (int i = 0; i < wizardIdle.Count; i++)
+                {
+                    if(findTarget(wizardIdle[i])) 
+                    {
+                        double angle;
+                        if (wizardIdle[i].target.Center.X < wizardIdle[i].Center.X)
+                        {
+                            angle = (float)(Math.PI);
+                        }
+                        else
+                        {
+                            angle = AngleBetween(wizardIdle[i].Center, wizardIdle[i].target.Center);
+                        }
+                        if (wizardIdle[i].Rotation >= angle + .5 || wizardIdle[i].Rotation <= angle - .5)
+                        {
+                            wizardIdle[i].Rotation += .1f;
+                            if(wizardIdle[i].Rotation <= (2*Math.PI)+.5 && wizardIdle[i].Rotation >= (2*Math.PI)-.5) {
+                                wizardIdle[i].Rotation = 0;
+                            }
+                        }
+                        if (((Objects.Wizard)wizardIdle[i]).canFire())
+                        {
+                            if(wizardIdle[i].Rotation <= angle + .5 && wizardIdle[i].Rotation >= angle - .5)
+                            {
+                                wizardIdle[i].target.m_health -= ((Objects.Wizard)wizardIdle[i]).damage;
+                            }
+                            if (wizardIdle[i].target.m_health <= 0)
+                            {
+                                scores.Add(new Objects.Score(new Vector2(16, 16), wizardIdle[i].target.Center, 100));
+                                player.addToScore(100);
+                                creeps.Remove(wizardIdle[i].target);
+                                wizardIdle[i].target = null;
+                            }
+                        }
+                    }
+                }
+                for (int i = 0; i < rangerIdle.Count; i++)
+                {
+                    if (findTarget(rangerIdle[i]))
+                    {
+                        double angle;
+                        if (rangerIdle[i].target.Center.X < rangerIdle[i].Center.X)
+                        {
+                            angle = (float)(Math.PI);
+                        }
+                        else
+                        {
+                            angle = AngleBetween(rangerIdle[i].Center, rangerIdle[i].target.Center);
+                        }
+                        if (rangerIdle[i].Rotation >= angle + .5 || rangerIdle[i].Rotation <= angle - .5)
+                        {
+                            rangerIdle[i].Rotation += .1f;
+                            if (rangerIdle[i].Rotation <= (2 * Math.PI) + .5 && rangerIdle[i].Rotation >= (2 * Math.PI) - .5)
+                            {
+                                rangerIdle[i].Rotation = 0;
+                            }
+                        }
+                        if (((Objects.Ranger)rangerIdle[i]).canFire())
+                        {
+                            if (rangerIdle[i].Rotation <= angle + .5 && rangerIdle[i].Rotation >= angle - .5)
+                            {
+                                rangerIdle[i].target.m_health -= ((Objects.Ranger)rangerIdle[i]).damage;
+                            }
+                            if (rangerIdle[i].target.m_health <= 0)
+                            {
+                                scores.Add(new Objects.Score(new Vector2(16, 16), rangerIdle[i].target.Center, 100));
+                                player.addToScore(100);
+                                creeps.Remove(rangerIdle[i].target);
+                                rangerIdle[i].target = null;
+                            }
+                        }
+                    }
+                }
+                for (int i = 0; i < warlockIdle.Count; i++)
+                {
+                    if (findTarget(warlockIdle[i]))
+                    {
+                        double angle;
+                        if (warlockIdle[i].target.Center.X < warlockIdle[i].Center.X)
+                        {
+                            angle = (float)(Math.PI);
+                        }
+                        else
+                        {
+                            angle = AngleBetween(warlockIdle[i].Center, warlockIdle[i].target.Center);
+                        }
+                        if (warlockIdle[i].Rotation >= angle + .5 || warlockIdle[i].Rotation <= angle - .5)
+                        {
+                            warlockIdle[i].Rotation += .1f;
+                            if (warlockIdle[i].Rotation <= (2 * Math.PI) + .5 && warlockIdle[i].Rotation >= (2 * Math.PI) - .5)
+                            {
+                                warlockIdle[i].Rotation = 0;
+                            }
+                        }
+                        if (((Objects.Warlock)warlockIdle[i]).canFire())
+                        {
+
+                            if (warlockIdle[i].Rotation <= angle + .5 && warlockIdle[i].Rotation >= angle - .5)
+                            {
+                                warlockIdle[i].target.m_health -= ((Objects.Warlock)warlockIdle[i]).damage;
+                            }
+                            if (warlockIdle[i].target.m_health <= 0)
+                            {
+                                scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 100));
+                                player.addToScore(100);
+                                creeps.Remove(warlockIdle[i].target);
+                                warlockIdle[i].target = null;
+                            }
+                        }
+                    }
+                    else if (findTarget(warlockIdle[i]))
+                    {
+                        double angle;
+                        if (warlockIdle[i].target.Center.X < warlockIdle[i].Center.X)
+                        {
+                            angle = (float)(Math.PI);
+                        }
+                        else
+                        {
+                            angle = AngleBetween(warlockIdle[i].Center, warlockIdle[i].target.Center);
+                        }
+                        if (warlockIdle[i].Rotation >= angle + .5 || warlockIdle[i].Rotation <= angle - .5)
+                        {
+                            warlockIdle[i].Rotation += .1f;
+                            if (warlockIdle[i].Rotation <= (2 * Math.PI) + .5 && warlockIdle[i].Rotation >= (2 * Math.PI) - .5)
+                            {
+                                warlockIdle[i].Rotation = 0;
+                            }
+                        }
+                        if (((Objects.Warlock)warlockIdle[i]).canSwipe())
+                        {
+                            if (warlockIdle[i].Rotation <= angle + .5 && warlockIdle[i].Rotation >= angle - .5)
+                            {
+                                warlockIdle[i].target.m_health -= ((Objects.Warlock)warlockIdle[i]).damage;
+                            }
+                            if (warlockIdle[i].target.m_health <= 0)
+                            {
+                                scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 100));
+                                player.addToScore(100);
+                                creeps.Remove(warlockIdle[i].target);
+                                warlockIdle[i].target = null;
                             }
                         }
                     }
@@ -548,11 +922,11 @@ namespace CS5410
                             player.addMoney(-5);
                             clicked.level++;
                         }
-                        if(clicked.level == 2)
+                        else if(clicked.level == 2)
                         {
                             ((Objects.Fighter)clicked).damage = 25;
                             ((Objects.Fighter)clicked).m_swipeRate = 15;
-                            ((Objects.Fighter)clicked).m_radius = 10;
+                            ((Objects.Fighter)clicked).m_radius = 4;
                             player.addMoney(-5);
                             clicked.level++;
                         }
@@ -561,17 +935,107 @@ namespace CS5410
                     // if our object is a wizard and we have enough money, update depending on level
                     if(clicked is Objects.Wizard)
                     {
-                        if (clicked.level == 1)
+                        if (clicked.level == 1 && player.getMoney()-2 >= 0)
                         {
-                            ((Objects.Fighter)clicked).damage = 20;
-                            ((Objects.Fighter)clicked).m_swipeRate = 12;
-                            player.addMoney(-5);
+                            ((Objects.Wizard)clicked).damage = 15;
+                            ((Objects.Wizard)clicked).m_fireRate = 4;
+                            player.addMoney(-2);
+                            clicked.level++;
+                        }
+                        else if(clicked.level == 2 && player.getMoney() - 3 >= 0)
+                        {
+                            ((Objects.Wizard)clicked).damage = 20;
+                            ((Objects.Wizard)clicked).m_fireRate = 10;
+                            ((Objects.Wizard)clicked).m_radius = 6;
+                            player.addMoney(-3);
+                            clicked.level++;
+                        }
+                        clicked = null;
+                    }
+                    // if our object is a ranger and we have enough money, update depending on level
+                    if (clicked is Objects.Ranger)
+                    {
+                        if (clicked.level == 1 && player.getMoney() - 2 >= 0)
+                        {
+                            ((Objects.Ranger)clicked).damage = 12;
+                            ((Objects.Ranger)clicked).m_fireRate = 7;
+                            player.addMoney(-2);
+                            clicked.level++;
+                        }
+                        else if (clicked.level == 2 && player.getMoney() - 3 >= 0)
+                        {
+                            ((Objects.Ranger)clicked).damage = 15;
+                            ((Objects.Ranger)clicked).m_fireRate = 10;
+                            ((Objects.Ranger)clicked).m_radius = 7;
+                            player.addMoney(-3);
+                            clicked.level++;
+                        }
+                        clicked = null;
+                    }
+                    // if our object is a warlock and we have enough money, update depending on level
+                    if (clicked is Objects.Warlock)
+                    {
+                        if (clicked.level == 1 && player.getMoney() - 2 >= 0)
+                        {
+                            ((Objects.Warlock)clicked).damage = 12;
+                            ((Objects.Warlock)clicked).m_fireRate = 5;
+                            player.addMoney(-2);
+                            clicked.level++;
+                        }
+                        else if (clicked.level == 2 && player.getMoney() - 3 >= 0)
+                        {
+                            ((Objects.Warlock)clicked).damage = 15;
+                            ((Objects.Warlock)clicked).m_fireRate = 10;
+                            ((Objects.Warlock)clicked).m_mradius = 7;
+                            ((Objects.Warlock)clicked).m_bradius = 4;
+                            player.addMoney(-3);
                             clicked.level++;
                         }
                         clicked = null;
                     }
                 }
                 upgrading = false;
+            }
+
+            if(selling)
+            {
+                if(clicked != null)
+                {
+                    if(clicked is Objects.Fighter)
+                    {
+                        fighterIdle.Remove(clicked);
+                        int x = (int)(clicked.Center.X - 32) / 64;
+                        int y = (int)(clicked.Center.Y - 32) / 64;
+                        board[y, x].setObject(null);
+                    }
+                    else if (clicked is Objects.Wizard)
+                    {
+                        wizardIdle.Remove(clicked);
+                        int x = (int)(clicked.Center.X - 32) / 64;
+                        int y = (int)(clicked.Center.Y - 32) / 64;
+                        board[y, x].setObject(null);
+                    }
+                    else if (clicked is Objects.Ranger)
+                    {
+                        rangerIdle.Remove(clicked);
+                        int x = (int)(clicked.Center.X - 32) / 64;
+                        int y = (int)(clicked.Center.Y - 32) / 64;
+                        board[y, x].setObject(null);
+                    }
+                    else if (clicked is Objects.Warlock)
+                    {
+                        warlockIdle.Remove(clicked);
+                        int x = (int)(clicked.Center.X - 32) / 64;
+                        int y = (int)(clicked.Center.Y - 32) / 64;
+                        board[y, x].setObject(null);
+                    }
+                    clicked = null;
+                    for (int i = 0; i < creeps.Count; i++)
+                    {
+                        findPath2(creeps[i]);
+                    }
+                }
+                selling = false;
             }
 
         }
@@ -633,13 +1097,32 @@ namespace CS5410
                 int column = x / 64;
                 if (board[row, column].getObject() == null)
                 {
-                    fighterIdle.Add(new Objects.Fighter(new Vector2(64, 64), new Vector2(board[row, column].m_x + 64, board[row, column].m_y + 64), 1, 1, 5));
-                    m_mouseCapture = true;
+                    bool valid = true;
+                    Objects.Fighter toPlace = new Objects.Fighter(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 5, 1, 3);
+                    board[row, column].setObject(toPlace);
+                    for (int i = 0; i < creeps.Count; i++)
+                    {
+                        if(!isPath(creeps[i]))
+                        {
+                            valid = false;
+                        }
+                    }
+                    if (valid)
+                    {
+                        fighterIdle.Add(toPlace);
+                        m_mouseCapture = true;
 
-                    board[row, column].setObject(fighterIdle[fighterIdle.Count - 1]);
+                        board[row, column].setObject(fighterIdle[fighterIdle.Count - 1]);
 
-                    placingFighter = false;
-                    towerPlaced = true;
+                        placingFighter = false;
+                        towerPlaced = true;
+                    }
+                    else
+                    {
+                        board[row, column].setObject(null);
+                        canPlace = false;
+                        errorTime = DateTime.Now;
+                    }
                 }
                 else
                 {
@@ -653,13 +1136,32 @@ namespace CS5410
                 int column = x / 64;
                 if (board[row, column].getObject() == null)
                 {
-                    wizardIdle.Add(new Objects.Wizard(new Vector2(64, 64), new Vector2(board[row, column].m_x+64, board[row, column].m_y+64), 1, 1, 5));
-                    m_mouseCapture = true;
+                    bool valid = true;
+                    Objects.Wizard toPlace = new Objects.Wizard(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 2, 1, 5);
+                    board[row, column].setObject(toPlace);
+                    for (int i = 0; i < creeps.Count; i++)
+                    {
+                        if (!isPath(creeps[i]))
+                        {
+                            valid = false;
+                        }
+                    }
+                    if (valid)
+                    {
+                        wizardIdle.Add(toPlace);
+                        m_mouseCapture = true;
 
-                    board[row, column].setObject(wizardIdle[wizardIdle.Count - 1]);
+                        board[row, column].setObject(wizardIdle[wizardIdle.Count - 1]);
 
-                    placingWizard = false;
-                    towerPlaced = true;
+                        placingWizard = false;
+                        towerPlaced = true;
+                    }
+                    else
+                    {
+                        board[row, column].setObject(null);
+                        canPlace = false;
+                        errorTime = DateTime.Now;
+                    }
                 }
                 else
                 {
@@ -673,13 +1175,31 @@ namespace CS5410
                 int column = x / 64;
                 if (board[row, column].getObject() == null)
                 {
-                    rangerIdle.Add(new Objects.Ranger(new Vector2(64, 64), new Vector2(board[row, column].m_x + 64, board[row, column].m_y + 64), 1, 1, 5));
-                    m_mouseCapture = true;
+                    bool valid = true;
+                    Objects.Ranger toPlace = new Objects.Ranger(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 5, 1, 6);
+                    board[row, column].setObject(toPlace);
+                    for (int i = 0; i < creeps.Count; i++)
+                    {
+                        if (!isPath(creeps[i]))
+                        {
+                            valid = false;
+                        }
+                    }
+                    if (valid)
+                    {
+                        rangerIdle.Add(toPlace);
+                        m_mouseCapture = true;
 
-                    board[row, column].setObject(rangerIdle[rangerIdle.Count - 1]);
+                        board[row, column].setObject(rangerIdle[rangerIdle.Count - 1]);
 
-                    placingRanger = false;
-                    towerPlaced = true;
+                        placingRanger = false;
+                        towerPlaced = true;
+                    }
+                    else
+                    {
+                        canPlace = false;
+                        errorTime = DateTime.Now;
+                    }
                 }
                 else
                 {
@@ -693,13 +1213,31 @@ namespace CS5410
                 int column = x / 64;
                 if (board[row, column].getObject() == null)
                 {
-                    warlockIdle.Add(new Objects.Warlock(new Vector2(64, 64), new Vector2(board[row, column].m_x + 64, board[row, column].m_y + 64), 1, 1, 1, 15, 5));
-                    m_mouseCapture = true;
+                    bool valid = true;
+                    Objects.Warlock toPlace = new Objects.Warlock(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 2, 2, 1, 6, 3);
+                    board[row, column].setObject(toPlace);
+                    for (int i = 0; i < creeps.Count; i++)
+                    {
+                        if (!isPath(creeps[i]))
+                        {
+                            valid = false;
+                        }
+                    }
+                    if (valid)
+                    {
+                        warlockIdle.Add(toPlace);
+                        m_mouseCapture = true;
 
-                    board[row, column].setObject(warlockIdle[warlockIdle.Count - 1]);
+                        board[row, column].setObject(warlockIdle[warlockIdle.Count - 1]);
 
-                    placingWarlock = false;
-                    towerPlaced = true;
+                        placingWarlock = false;
+                        towerPlaced = true;
+                    }
+                    else
+                    {
+                        canPlace = false;
+                        errorTime = DateTime.Now;
+                    }
                 }
                 else
                 {
@@ -707,9 +1245,8 @@ namespace CS5410
                     errorTime = DateTime.Now;
                 }
             }
-
             // if we have clicked a valid square in the grid, if there is an object, set it as our clicked object
-            if(x < m_graphics.PreferredBackBufferWidth-384)
+            else if(x < m_graphics.PreferredBackBufferWidth-384)
             {
                 int row = y / 64;
                 int column = x / 64;
@@ -742,15 +1279,21 @@ namespace CS5410
 
         }
 
-        // find shortest path for creep
-        private void findPath(Objects.AnimatedSprite creep)
+        private bool isPath(Objects.AnimatedSprite creep)
         {
-            // clear current creeps path
-            creep.shortestPath.Clear();
-
+            for (int y = 0; y < 10; y++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    board[y, x].visited = false;
+                }
+            }
             // get our destination and our creeps current location
             Vector2 dest = endingLocations[level];
-            Vector2 start = new Vector2((int)creep.Center.X / 64, (((int)creep.Center.Y+32) / 64));
+            Vector2 start = new Vector2((int)(creep.Center.X - 32) / 64, (((int)creep.Center.Y - 64) / 64));
+
+            // clear current creeps path
+            creep.shortestPath.Clear();
 
             // get distance from current cell to destination
             int dist = (int)(dest.X - start.X) + (int)(dest.Y - start.Y);
@@ -768,16 +1311,16 @@ namespace CS5410
                 // get the first object of queue and remove it
                 Objects.GameCell curr = q[0];
                 q.RemoveAt(0);
-
+                
                 // if our distance from the current cell is greater than 1, we have not reached our destination
-                if (curr.m_distance > 1)
+                if (curr != board[(int)endingLocations[level].Y, (int)endingLocations[level].X])
                 {
                     // if our current cell has a right neighbor, that neighbor is empty, and not in the queue, calculate distance and add it to queue
-                    if (curr.m_x + 64 < 10*64)
+                    if (curr.m_originx + 64 < 10 * 64)
                     {
-                        int x = (curr.m_x + 64) / 64;
-                        int y = curr.m_y / 64;
-                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        int x = (curr.m_originx + 64) / 64;
+                        int y = curr.m_originy / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]) && !board[y, x].visited)
                         {
                             int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
                             board[y, x].m_distance = tempDist;
@@ -785,11 +1328,11 @@ namespace CS5410
                         }
                     }
                     // if our current cell has a left neighbor, that neighbor is empty, and not in the queue, calculate distance and add it to queue
-                    if (curr.m_x - 64 >= 0)
+                    if (curr.m_originx - 64 >= 0)
                     {
-                        int x = (curr.m_x - 64) / 64;
-                        int y = curr.m_y / 64;
-                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        int x = (curr.m_originx - 64) / 64;
+                        int y = curr.m_originy / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]) && !board[y, x].visited)
                         {
                             int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
                             board[y, x].m_distance = tempDist;
@@ -797,11 +1340,11 @@ namespace CS5410
                         }
                     }
                     // if our current cell has a upper neighbor, that neighbor is empty, and not in the queue, calculate distance and add it to queue
-                    if (curr.m_y - 64 >= 0)
+                    if (curr.m_originy - 64 >= 0)
                     {
-                        int x = (curr.m_x) / 64;
-                        int y = (curr.m_y - 64) / 64;
-                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        int x = (curr.m_originx) / 64;
+                        int y = (curr.m_originy - 64) / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]) && !board[y, x].visited)
                         {
                             int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
                             board[y, x].m_distance = tempDist;
@@ -809,11 +1352,11 @@ namespace CS5410
                         }
                     }
                     // if our current cell has a lower neighbor, that neighbor is empty, and not in the queue, calculate distance and add it to queue
-                    if (curr.m_y + 64 < 10*64)
+                    if (curr.m_originy + 64 < 10 * 64)
                     {
-                        int x = (curr.m_x) / 64;
-                        int y = (curr.m_y + 64) / 64;
-                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]))
+                        int x = (curr.m_originx) / 64;
+                        int y = (curr.m_originy + 64) / 64;
+                        if (board[y, x].getObject() == null && !q.Contains(board[y, x]) && !board[y, x].visited)
                         {
                             int tempDist = (int)(dest.X - x) + (int)(dest.Y - y);
                             board[y, x].m_distance = tempDist;
@@ -821,7 +1364,7 @@ namespace CS5410
                         }
                     }
                     // add our current cell to the shortest path
-                    creep.shortestPath.Add(curr);
+                    curr.visited = true;
 
                     // reorder queue by distance
                     q = q.OrderBy(g => g.m_distance).ToList();
@@ -829,11 +1372,148 @@ namespace CS5410
                 // if we have found our destination, add the destination to the path and break from the queue loop
                 else
                 {
-                    creep.shortestPath.Add(curr);
-                    break;
+                    return true;
                 }
 
             }
+            return false;
+        }
+
+        private void findPath2(Objects.AnimatedSprite creep)
+        {
+            for (int row = 0; row < 10; row++)
+            {
+                for (int column = 0; column < 10; column++)
+                {
+                    board[row, column].visited = false;
+                    board[row, column].m_distance = int.MaxValue;
+                }
+            }
+
+            // get our destination and our creeps current location
+            Vector2 dest = endingLocations[level];
+            Vector2 start = new Vector2((int)(creep.Center.X - 32) / 64, (((int)creep.Center.Y - 64) / 64));
+
+            // clear current creeps path
+            creep.shortestPath.Clear();
+
+            // get distance from current cell to destination
+            int dist = Math.Abs((int)(dest.X - start.X)) + Math.Abs((int)(dest.Y - start.Y));
+            board[(int)start.Y, (int)start.X].m_distance = dist;
+
+            List<Objects.GameCell> q = new List<Objects.GameCell>();
+            q.Add(board[(int)start.Y, (int)start.X]);
+
+            while(q.Count > 0)
+            {
+                Objects.GameCell current = q[0];
+                q.RemoveAt(0);
+                current.visited = true;
+
+                int currx = current.m_originx / 64;
+                int curry = current.m_originy / 64;
+
+                if (current == board[(int)dest.Y, (int)dest.X])
+                {
+                    creep.shortestPath.Add(current);
+                    break;
+                }
+                else
+                {
+                    creep.shortestPath.Add(current);
+                    if (current.m_originx + 64 < 10 * 64)
+                    {
+                        int x = (current.m_originx + 64) / 64;
+                        int y = current.m_originy / 64;
+                        if(!board[y, x].visited && board[y, x].getObject() == null)
+                        {
+                            int tempDist = Math.Abs((int)(dest.X - x)) + Math.Abs((int)(dest.Y - y));
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    if (current.m_originx - 64 >= 0)
+                    {
+                        int x = (current.m_originx - 64) / 64;
+                        int y = current.m_originy / 64;
+                        if (!board[y, x].visited && board[y, x].getObject() == null)
+                        {
+                            int tempDist = Math.Abs((int)(dest.X - x)) + Math.Abs((int)(dest.Y - y));
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    if (current.m_originy - 64 >= 0)
+                    {
+                        int x = (current.m_originx) / 64;
+                        int y = (current.m_originy - 64) / 64;
+                        if (!board[y, x].visited && board[y, x].getObject() == null)
+                        {
+                            int tempDist = Math.Abs((int)(dest.X - x)) + Math.Abs((int)(dest.Y - y));
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    if (current.m_originy + 64 < 10 * 64)
+                    {
+                        int x = (current.m_originx) / 64;
+                        int y = (current.m_originy + 64) / 64;
+                        if (!board[y, x].visited && board[y, x].getObject() == null)
+                        {
+                            int tempDist = Math.Abs((int)(dest.X - x)) + Math.Abs((int)(dest.Y - y));
+                            board[y, x].m_distance = tempDist;
+                            q.Add(board[y, x]);
+                        }
+                    }
+                    q = q.OrderBy(g => g.m_distance).ToList();
+                }
+            }
+        }
+
+        bool findTarget(Objects.AnimatedSprite tower)
+        {
+            for (int i = 0; i < creeps.Count; i++)
+            {
+                if (!(tower is Objects.Warlock))
+                {
+                    if (tower.doIntersect(new Vector2(creeps[i].Center.X - 32, creeps[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = creeps[i];
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    Objects.Warlock warlockTower = (Objects.Warlock)tower;
+                    if (warlockTower.doIntersectMissiles(new Vector2(creeps[i].Center.X - 32, creeps[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = creeps[i];
+                        return true;
+                    }
+                    else if (warlockTower.doIntersectBombs(new Vector2(creeps[i].Center.X - 32, creeps[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = creeps[i];
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static double AngleBetween(Vector2 vector1, Vector2 vector2)
+        {
+            double sin = vector1.X * vector2.Y - vector2.X * vector1.Y;
+            double cos = vector1.X * vector2.X + vector1.Y * vector2.Y;
+
+            return Math.Atan2(sin, cos); //* (180 / Math.PI);
         }
     }
 }

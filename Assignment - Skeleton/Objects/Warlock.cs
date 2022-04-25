@@ -7,18 +7,19 @@ namespace CS5410.Objects
 {
     class Warlock : AnimatedSprite
     {
-        private readonly double m_fireRate;
-        private readonly double m_swipeRate;
+        public double m_fireRate;
+        public double m_swipeRate;
         private readonly double m_rotateRate;
-        private readonly double m_mradius;
-        private readonly double m_bradius;
+        public double m_mradius;
+        public double m_bradius;
         private double lastFire = -1;
         private DateTime lastFireTime;
         private double lastSwipe = -1;
         private DateTime lastSwipeTime;
         public int level;
+        public int damage;
 
-        public Warlock(Vector2 size, Vector2 center, double fireRate, double swipeRate, double rotateRate, double missileRadius, double bombRadius) : base(size, center)
+        public Warlock(Vector2 size, Vector2 center, double fireRate, double swipeRate, double rotateRate, double missileRadius, double bombRadius) : base(size, center, (int)missileRadius, 0)
         {
             m_fireRate = fireRate;
             m_swipeRate = swipeRate;
@@ -26,6 +27,7 @@ namespace CS5410.Objects
             m_mradius = missileRadius;
             m_bradius = bombRadius;
             level = 1;
+            damage = 10;
         }
 
         public void rotateLeft(GameTime gameTime)
@@ -38,7 +40,7 @@ namespace CS5410.Objects
             m_rotation += (float)(m_rotateRate * gameTime.ElapsedGameTime.TotalMilliseconds);
         }
 
-        public bool canFire(GameTime gameTime)
+        public bool canFire()
         {
             if (lastFire == -1)
             {
@@ -50,7 +52,7 @@ namespace CS5410.Objects
             {
                 DateTime currTime = DateTime.Now;
                 lastFire = (currTime - lastFireTime).TotalMilliseconds;
-                if (lastFire >= m_fireRate)
+                if (lastFire >= (1000 / m_fireRate))
                 {
                     lastFireTime = DateTime.Now;
                     lastFire = 0;
@@ -60,7 +62,7 @@ namespace CS5410.Objects
             }
         }
 
-        public bool canSwipe(GameTime gameTime)
+        public bool canSwipe()
         {
             if (lastSwipe == -1)
             {
@@ -72,7 +74,7 @@ namespace CS5410.Objects
             {
                 DateTime currTime = DateTime.Now;
                 lastSwipe = (currTime - lastSwipeTime).TotalMilliseconds;
-                if (lastSwipe >= m_swipeRate)
+                if (lastSwipe >= (1000 / m_swipeRate))
                 {
                     lastSwipeTime = DateTime.Now;
                     lastSwipe = 0;
@@ -113,7 +115,7 @@ namespace CS5410.Objects
             double distance = Math.Sqrt((distX * distX) + (distY * distY));
 
             // if the distance is less than the radius, collision!
-            if (distance <= m_mradius)
+            if (distance <= m_mradius * 64)
             {
                 return true;
             }
@@ -151,7 +153,7 @@ namespace CS5410.Objects
             double distance = Math.Sqrt((distX * distX) + (distY * distY));
 
             // if the distance is less than the radius, collision!
-            if (distance <= m_bradius)
+            if (distance <= m_bradius * 64)
             {
                 return true;
             }

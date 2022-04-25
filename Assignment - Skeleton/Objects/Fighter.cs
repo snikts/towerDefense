@@ -10,17 +10,17 @@ namespace CS5410.Objects
 
         public double m_swipeRate;
         private readonly double m_rotateRate;
-        public double m_radius;
+        //public double m_radius;
         public int damage;
         private double lastSwipe = -1;
         private DateTime lastSwipeTime;
         //public int level;
 
-        public Fighter(Vector2 size, Vector2 center, double swipeRate, double rotateRate, int radius) : base(size, center)
+        public Fighter(Vector2 size, Vector2 center, double swipeRate, double rotateRate, int radius) : base(size, center, radius, 0)
         {
             m_swipeRate = swipeRate;
             m_rotateRate = rotateRate;
-            m_radius = radius;
+            //m_radius = radius;
             damage = 10;
             //level = 1;
         }
@@ -35,7 +35,7 @@ namespace CS5410.Objects
             m_rotation += (float)(m_rotateRate * gameTime.ElapsedGameTime.TotalMilliseconds);
         }
 
-        public bool canSwipe(GameTime gameTime)
+        public bool canSwipe()
         {
             if(lastSwipe == -1)
             {
@@ -47,7 +47,7 @@ namespace CS5410.Objects
             {
                 DateTime currTime = DateTime.Now;
                 lastSwipe = (currTime - lastSwipeTime).TotalMilliseconds;
-                if(lastSwipe >= m_swipeRate)
+                if(lastSwipe >= (1000 / m_swipeRate))
                 {
                     lastSwipeTime = DateTime.Now;
                     lastSwipe = 0;

@@ -8,12 +8,12 @@ namespace CS5410.Objects
     class Dragon : AnimatedSprite
     {
         private readonly int m_moveRate;
-        private readonly int m_health;
+        //private readonly int m_health;
 
-        public Dragon(Vector2 size, Vector2 center, int moveRate, int health) : base(size, center)
+        public Dragon(Vector2 size, Vector2 center, int moveRate, int health) : base(size, center, 0, health)
         {
             m_moveRate = moveRate;
-            m_health = health;
+            //m_health = health;
         }
     }
 }

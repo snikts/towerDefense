@@ -174,28 +174,26 @@
     ]
   },
   "packageFolders": {
-    "/Users/sarahjones/.nuget/packages/": {},
-    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder": {}
+    "C:\\Users\\Sarah\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/Assignment - Skeleton.csproj",
+      "projectUniqueName": "C:\\Users\\Sarah\\Downloads\\TowerDefenseGame\\Assignment - Skeleton\\Assignment - Skeleton.csproj",
       "projectName": "Assignment - Skeleton",
-      "projectPath": "/Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/Assignment - Skeleton.csproj",
-      "packagesPath": "/Users/sarahjones/.nuget/packages/",
-      "outputPath": "/Users/sarahjones/Desktop/towerDefense/Assignment - Skeleton/obj/",
+      "projectPath": "C:\\Users\\Sarah\\Downloads\\TowerDefenseGame\\Assignment - Skeleton\\Assignment - Skeleton.csproj",
+      "packagesPath": "C:\\Users\\Sarah\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Sarah\\Downloads\\TowerDefenseGame\\Assignment - Skeleton\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "/Users/sarahjones/.config/NuGet/NuGet.Config"
+        "C:\\Users\\Sarah\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -238,7 +236,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.407/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }

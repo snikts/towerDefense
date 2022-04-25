@@ -10,17 +10,17 @@ namespace CS5410.Objects
 
         public double m_fireRate;
         private readonly double m_rotateRate;
-        public double m_radius;
+        //public double m_radius;
         private double lastFire = -1;
         private DateTime lastFireTime;
         //public int level;
         public int damage;
 
-        public Wizard(Vector2 size, Vector2 center, double fireRate, double rotateRate, double radius) : base(size, center)
+        public Wizard(Vector2 size, Vector2 center, double fireRate, double rotateRate, double radius) : base(size, center, (int)radius, 0)
         {
             m_fireRate = fireRate;
             m_rotateRate = rotateRate;
-            m_radius = radius;
+            //m_radius = radius;
             //level = 1;
             damage = 10;
         }
@@ -35,7 +35,7 @@ namespace CS5410.Objects
             m_rotation += (float)(m_rotateRate * gameTime.ElapsedGameTime.TotalMilliseconds);
         }
 
-        public bool canFire(GameTime gameTime)
+        public bool canFire()
         {
             if (lastFire == -1)
             {
@@ -47,7 +47,7 @@ namespace CS5410.Objects
             {
                 DateTime currTime = DateTime.Now;
                 lastFire = (currTime - lastFireTime).TotalMilliseconds;
-                if (lastFire >= m_fireRate)
+                if (lastFire >= (1000/m_fireRate))
                 {
                     lastFireTime = DateTime.Now;
                     lastFire = 0;

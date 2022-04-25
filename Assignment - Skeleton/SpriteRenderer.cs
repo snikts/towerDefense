@@ -40,7 +40,7 @@ namespace CS5410
                 new Rectangle(m_subImageIndex * m_subImageWidth, 0, m_subImageWidth, m_spriteSheet.Height), // Source sub-texture
                 Color.White,
                 model.Rotation, // Angular rotation
-                new Vector2(m_subImageWidth / 2, m_spriteSheet.Height / 2), // Center point of rotation
+                new Vector2(m_subImageWidth / 2, m_spriteSheet.Height), // Center point of rotation
                 SpriteEffects.None, 0);
         }
     }
