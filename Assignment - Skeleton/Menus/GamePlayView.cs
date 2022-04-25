@@ -44,7 +44,9 @@ namespace CS5410
         private Objects.AnimatedSprite rangerButton;
         private List<Objects.AnimatedSprite> warlockIdle;
         private Objects.AnimatedSprite warlockButton;
-        private List<Objects.AnimatedSprite> creeps;
+        private List<Objects.AnimatedSprite> goblins;
+        private List<Objects.AnimatedSprite> hobgoblins;
+        private List<Objects.AnimatedSprite> dragons;
         private Objects.AnimatedSprite clicked;
         private List<Objects.AnimatedSprite> scores;
 
@@ -89,6 +91,7 @@ namespace CS5410
         private bool upgrading;
         private bool wasSDown;
         private bool selling;
+        private bool waveEnded;
 
         // declare gameboard
         private Objects.GameCell[,] board;
@@ -118,7 +121,13 @@ namespace CS5410
         private List<Vector2> startingLocations; // an array of starting locations for creeps
         private List<Vector2> endingLocations; // an array of destinations for creeps
         private DateTime lastCreep; // time last creep entered arena
-        
+        private int wave;
+        private List<int[]> creepsPerWave;
+        private int totalGoblins;
+        private int totalHobGoblins;
+        private int totalDragons;
+        private DateTime waveTime;
+
 
         public override void loadContent(ContentManager contentManager)
         {
@@ -165,7 +174,9 @@ namespace CS5410
             rangerButton = new Objects.Ranger(new Vector2(64, 64), new Vector2(m_graphics.PreferredBackBufferWidth - 384 + 96, ((m_graphics.PreferredBackBufferHeight / 6) * 2) + 64), 1, 1, 5);
             warlockIdle = new List<Objects.AnimatedSprite>();
             warlockButton = new Objects.Warlock(new Vector2(64, 64), new Vector2(m_graphics.PreferredBackBufferWidth - 384 + 96, ((m_graphics.PreferredBackBufferHeight / 6) * 3) + 64), 1, 1, 1, 15, 5);
-            creeps = new List<Objects.AnimatedSprite>();
+            goblins = new List<Objects.AnimatedSprite>();
+            hobgoblins = new List<Objects.AnimatedSprite>();
+            dragons = new List<Objects.AnimatedSprite>();
             scores = new List<Objects.AnimatedSprite>();
 
             // load renderer assets
@@ -201,12 +212,13 @@ namespace CS5410
             canPlace = true;
             wasSDown = false;
             selling = false;
+            waveEnded = false;
 
             // initialize gameboard
             board = new Objects.GameCell[10, 10];
-            for (int y = 3; y < 14; y++)
+            for (int y = 0; y < 10; y++)
             {
-                for (int x = 3; x < 14; x++)
+                for (int x = 0; x < 10; x++)
                 {
                     int originx = x * 64;
                     int originy = y * 64;
@@ -237,21 +249,29 @@ namespace CS5410
             }
 
             // initialize player object
-            player = new Objects.Player(0, 100, new Vector2(32, 32), new Vector2(64, 64));
+            player = new Objects.Player(100, 100, new Vector2(32, 32), new Vector2(64, 64));
 
             //initialize other objects needed for gameplay
             errorTime = DateTime.Now; // initialize last time we got an error placing tower to now
             currLevel = 0; // initialize the current level of our clicked object to 0
             level = 0; // initialize the current level of our game to zero
             startingLocations = new List<Vector2>(); // initialize our starting locations array
-            startingLocations.Add(new Vector2(0, 5)); // add vector for level 1 starting location
-            startingLocations.Add(new Vector2(5, 0)); // add vector for level 2 starting location
+            startingLocations.Add(new Vector2(5, 0)); // add vector for level 1 starting location
+            startingLocations.Add(new Vector2(0, 5)); // add vector for level 2 starting location
             endingLocations = new List<Vector2>(); // initialize our ending locations array
-            endingLocations.Add(new Vector2(9, 5)); // add vector for level 1 destination
-            endingLocations.Add(new Vector2(5, 9)); // add vector for level 2 destination
+            endingLocations.Add(new Vector2(5, 9)); // add vector for level 1 destination
+            endingLocations.Add(new Vector2(9, 5)); // add vector for level 2 destination
             lastCreep = DateTime.Now; // initialize the last time a creep entered the stage to now
             clicked = null; // initialize our currently clicked object to nothing
-            creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery + 64), 1, 50));
+            //creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery + 64), 1, 50));
+            wave = 0;
+            creepsPerWave = new List<int[]>();
+            creepsPerWave.Add(new int[] { 5, 2, 1 });
+            creepsPerWave.Add(new int[] { 10, 5, 2});
+            totalGoblins = 0;
+            totalHobGoblins = 0;
+            totalDragons = 0;
+            waveTime = DateTime.Now;
 
         }
 
@@ -280,11 +300,11 @@ namespace CS5410
                 int lowest = 0;
                 for (int i = 0; i < highScores.Length; i++)
                 {
-                    if(highScores[lowest] > highScores[i])
+                    if (highScores[lowest] > highScores[i])
                     {
                         lowest = i;
                     }
-                   
+
                 }
                 if (highScores[lowest] < player.getScore())
                 {
@@ -295,23 +315,36 @@ namespace CS5410
             }
 
             // if space is pressed and space was not previously down, indicate that grid should be on
-            if(Keyboard.GetState().IsKeyDown(Keys.Space) && !wasSpaceDown)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !wasSpaceDown)
             {
                 wasSpaceDown = true;
                 gridOn = !gridOn;
             }
-            else if(wasSpaceDown && !Keyboard.GetState().IsKeyDown(Keys.Space))
+            else if (wasSpaceDown && !Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 wasSpaceDown = false;
             }
 
             // if g is pressed and wasn't previously down, indicate that level should start
-            if(Keyboard.GetState().IsKeyDown(Keys.G) && !wasGDown)
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && !wasGDown)
             {
                 wasGDown = true;
-                levelStarted = true;
+                if (!levelStarted)
+                {
+                    levelStarted = true;
+                    //level++;
+                    wave = 0;
+                    if(level >= 2)
+                    {
+                        creepsPerWave.Add(new int[] { creepsPerWave[level - 1][0] + 5, creepsPerWave[level - 1][1] + 3, creepsPerWave[level - 1][2] + 1 });
+
+                    }
+                    totalDragons = 0;
+                    totalGoblins = 0;
+                    totalHobGoblins = 0;
+                }
             }
-            else if(wasGDown && !Keyboard.GetState().IsKeyDown(Keys.G))
+            else if (wasGDown && !Keyboard.GetState().IsKeyDown(Keys.G))
             {
                 wasGDown = false;
             }
@@ -346,7 +379,7 @@ namespace CS5410
             m_spriteBatch.Begin();
 
             // draw grass background
-            for (int i = 0; i < m_graphics.PreferredBackBufferWidth-384; i += 128)
+            for (int i = 0; i < m_graphics.PreferredBackBufferWidth - 384; i += 128)
             {
                 for (int j = 0; j < m_graphics.PreferredBackBufferHeight; j += 128)
                 {
@@ -355,7 +388,7 @@ namespace CS5410
             }
 
             // draw wood menu background
-            for (int i = m_graphics.PreferredBackBufferWidth - 384; i < m_graphics.PreferredBackBufferWidth; i+=128)
+            for (int i = m_graphics.PreferredBackBufferWidth - 384; i < m_graphics.PreferredBackBufferWidth; i += 128)
             {
                 for (int j = 0; j < m_graphics.PreferredBackBufferHeight; j += 128)
                 {
@@ -364,15 +397,15 @@ namespace CS5410
             }
 
             // draw walls
-            for (int i = 0; i < m_graphics.PreferredBackBufferWidth-384-64; i+=62)
+            for (int i = 0; i < m_graphics.PreferredBackBufferWidth - 384 - 64; i += 62)
             {
-                if(i < 868 || i > 1116)
+                if (i < 868 || i > 1116)
                 {
                     m_spriteBatch.Draw(walls, new Rectangle(i, 0, 64, 64), Color.White);
                 }
-                if(i >= 868 && i < 930)
+                if (i >= 868 && i < 930)
                 {
-                    m_spriteBatch.Draw(pillars, new Rectangle(i-20, 0, 64, 64), Color.White);
+                    m_spriteBatch.Draw(pillars, new Rectangle(i - 20, 0, 64, 64), Color.White);
                 }
             }
             m_spriteBatch.Draw(pillars, new Rectangle(1116 + 22, 0, 64, 64), Color.White);
@@ -380,7 +413,7 @@ namespace CS5410
             // draw all fighter towers
             for (int i = 0; i < fighterIdle.Count; i++)
             {
-            fIRenderer.draw(m_spriteBatch, fighterIdle[i]);
+                fIRenderer.draw(m_spriteBatch, fighterIdle[i]);
             }
 
             // draw all wizard towers
@@ -402,11 +435,11 @@ namespace CS5410
             }
 
             // if our grid is supposed to be on, draw our grid squares
-            if(gridOn)
+            if (gridOn)
             {
-                for (int y = 0; y < 10*64; y+=64)
+                for (int y = 0; y < 10 * 64; y += 64)
                 {
-                    for (int x = 0; x < 10*64; x+=64)
+                    for (int x = 0; x < 10 * 64; x += 64)
                     {
                         m_spriteBatch.Draw(graph, new Rectangle(x, y, 64, 64), Color.White);
                     }
@@ -420,13 +453,13 @@ namespace CS5410
             waBRenderer.draw(m_spriteBatch, warlockButton);
 
             // draw the menu descriptions
-            m_spriteBatch.Draw(fighterLevels[0], new Rectangle((int)fighterButton.Center.X, (int)fighterButton.Center.Y-100, 250, 250), Color.White);
+            m_spriteBatch.Draw(fighterLevels[0], new Rectangle((int)fighterButton.Center.X, (int)fighterButton.Center.Y - 100, 250, 250), Color.White);
             m_spriteBatch.Draw(wizardLevels[0], new Rectangle((int)wizardButton.Center.X, (int)wizardButton.Center.Y - 100, 250, 250), Color.White);
             m_spriteBatch.Draw(rangerLevels[0], new Rectangle((int)rangerButton.Center.X, (int)rangerButton.Center.Y - 100, 250, 250), Color.White);
             m_spriteBatch.Draw(warlockLevels[0], new Rectangle((int)warlockButton.Center.X, (int)warlockButton.Center.Y - 100, 250, 250), Color.White);
 
             // if we are placing a tower, draw the radius of the tower
-            if(placingFighter)
+            if (placingFighter)
             {
                 if (canPlace)
                 {
@@ -437,7 +470,7 @@ namespace CS5410
                     m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 96, (int)placingPos.Y - 96, 192, 192), Color.White);
                 }
             }
-            else if(placingWizard)
+            else if (placingWizard)
             {
                 if (canPlace)
                 {
@@ -448,7 +481,7 @@ namespace CS5410
                     m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 160, (int)placingPos.Y - 160, 320, 320), Color.White);
                 }
             }
-            else if(placingRanger)
+            else if (placingRanger)
             {
                 if (canPlace)
                 {
@@ -459,7 +492,7 @@ namespace CS5410
                     m_spriteBatch.Draw(errorRadius, new Rectangle((int)placingPos.X - 192, (int)placingPos.Y - 192, 384, 384), Color.White);
                 }
             }
-            else if(placingWarlock)
+            else if (placingWarlock)
             {
                 if (canPlace)
                 {
@@ -473,33 +506,63 @@ namespace CS5410
             }
 
             // draw the description for the level of our current clicked item
-            if(currLevel == 1)
+            if (currLevel == 1)
             {
                 m_spriteBatch.Draw(fighterLevels[0], new Rectangle((int)fighterButton.Center.X, (int)warlockButton.Center.Y - 450, 250, 250), Color.White);
             }
 
             // draw all our creeps
-            for (int i = 0; i < creeps.Count; i++)
+            for (int i = 0; i < goblins.Count; i++)
             {
 
-                m_spriteBatch.Draw(healthbar, new Rectangle((int)creeps[i].Center.X-70, (int)creeps[i].Center.Y - 96, 32, 16), Color.White);
-                double percentage = (double)creeps[i].m_health / (double)50;
-                if(percentage >= .5)
+                m_spriteBatch.Draw(healthbar, new Rectangle((int)goblins[i].Center.X - 70, (int)goblins[i].Center.Y - 96, 32, 16), Color.White);
+                double percentage = (double)goblins[i].m_health / (double)50;
+                if (percentage >= .5)
                 {
-                    m_spriteBatch.Draw(greenBar, new Rectangle((int)creeps[i].Center.X - 70, (int)creeps[i].Center.Y - 96, (int)(32*percentage), 16), Color.White);
+                    m_spriteBatch.Draw(greenBar, new Rectangle((int)goblins[i].Center.X - 70, (int)goblins[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
                 }
                 else
                 {
-                    m_spriteBatch.Draw(redBar, new Rectangle((int)creeps[i].Center.X - 70, (int)creeps[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
+                    m_spriteBatch.Draw(redBar, new Rectangle((int)goblins[i].Center.X - 70, (int)goblins[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
                 }
-                gWRenderer.draw(m_spriteBatch, creeps[i]);
+                gWRenderer.draw(m_spriteBatch, goblins[i]);
+            }
+            for (int i = 0; i < hobgoblins.Count; i++)
+            {
+
+                m_spriteBatch.Draw(healthbar, new Rectangle((int)hobgoblins[i].Center.X - 70, (int)hobgoblins[i].Center.Y - 96, 32, 16), Color.White);
+                double percentage = (double)hobgoblins[i].m_health / (double)100;
+                if (percentage >= .5)
+                {
+                    m_spriteBatch.Draw(greenBar, new Rectangle((int)hobgoblins[i].Center.X - 70, (int)hobgoblins[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
+                }
+                else
+                {
+                    m_spriteBatch.Draw(redBar, new Rectangle((int)hobgoblins[i].Center.X - 70, (int)hobgoblins[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
+                }
+                hWRenderer.draw(m_spriteBatch, hobgoblins[i]);
+            }
+            for (int i = 0; i < dragons.Count; i++)
+            {
+
+                m_spriteBatch.Draw(healthbar, new Rectangle((int)dragons[i].Center.X - 70, (int)dragons[i].Center.Y - 96, 32, 16), Color.White);
+                double percentage = (double)dragons[i].m_health / (double)150;
+                if (percentage >= .5)
+                {
+                    m_spriteBatch.Draw(greenBar, new Rectangle((int)dragons[i].Center.X - 70, (int)dragons[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
+                }
+                else
+                {
+                    m_spriteBatch.Draw(redBar, new Rectangle((int)dragons[i].Center.X - 70, (int)dragons[i].Center.Y - 96, (int)(32 * percentage), 16), Color.White);
+                }
+                dFRenderer.draw(m_spriteBatch, dragons[i]);
             }
 
             // if our clicked object is not null, highlight it's square
-            if(clicked != null)
+            if (clicked != null)
             {
-                m_spriteBatch.Draw(selected, new Rectangle((int)clicked.Center.X-64, (int)clicked.Center.Y-64, 64, 64), Color.Red);
-                if(clicked is Objects.Fighter)
+                m_spriteBatch.Draw(selected, new Rectangle((int)clicked.Center.X - 64, (int)clicked.Center.Y - 96, 64, 64), Color.Red);
+                if (clicked is Objects.Fighter)
                 {
                     m_spriteBatch.Draw(fighterLevels[clicked.level - 1], new Rectangle((int)warlockButton.Center.X, (int)warlockButton.Center.Y + 100, 250, 250), Color.White);
                 }
@@ -517,19 +580,27 @@ namespace CS5410
                 }
             }
 
-            if(!levelStarted)
+            if (!levelStarted)
             {
-                if (startingLocations[level].X == 0)
+                if (startingLocations.Count > level)
                 {
-                    Objects.AnimatedSprite pointer = new Objects.AnimatedSprite(new Vector2(32, 32), new Vector2((startingLocations[level].X + 1) * 64, (startingLocations[level].Y * 64)+48), 0, 0);
-                    pointer.Rotation = (float)Math.PI;
-                    pointerRenderer.draw(m_spriteBatch, pointer);
+                    if (startingLocations[level].X == 0)
+                    {
+                        Objects.AnimatedSprite pointer = new Objects.AnimatedSprite(new Vector2(32, 32), new Vector2((startingLocations[level].X + 1) * 64, (startingLocations[level].Y * 64) + 48), 0, 0);
+                        pointer.Rotation = (float)Math.PI;
+                        pointerRenderer.draw(m_spriteBatch, pointer);
+                    }
+                    else if (startingLocations[level].Y == 0)
+                    {
+                        Objects.AnimatedSprite pointer = new Objects.AnimatedSprite(new Vector2(32, 32), new Vector2((startingLocations[level].X * 64) + 48, (startingLocations[level].Y + 1) * 64), 0, 0);
+                        pointer.Rotation = (float)(Math.PI / 2);
+                        pointerRenderer.draw(m_spriteBatch, pointer);
+                    }
                 }
-                else if(startingLocations[level].Y == 0)
+                else
                 {
-                    Objects.AnimatedSprite pointer = new Objects.AnimatedSprite(new Vector2(32, 32), new Vector2((startingLocations[level].X * 64)+48, (startingLocations[level].Y+1) * 64), 0, 0);
-                    pointer.Rotation = (float)(Math.PI/2);
-                    pointerRenderer.draw(m_spriteBatch, pointer);
+                    startingLocations.Add(new Vector2(startingLocations[level - 2].X, startingLocations[level - 2].Y));
+                    endingLocations.Add(new Vector2(endingLocations[level - 2].X, endingLocations[level - 2].Y));
                 }
             }
 
@@ -553,6 +624,10 @@ namespace CS5410
                 }
             }
 
+            Vector2 stringSize = m_font.MeasureString("SCORE: " + player.getScore().ToString());
+            m_spriteBatch.DrawString(m_font, "SCORE: " + player.getScore().ToString(), new Vector2(m_graphics.PreferredBackBufferWidth - 384 - stringSize.X-100, 10), Color.Black);
+            Vector2 stringSize2 = m_font.MeasureString("MONEY: " + player.getMoney().ToString());
+            m_spriteBatch.DrawString(m_font, "MONEY: " + player.getMoney().ToString(), new Vector2(m_graphics.PreferredBackBufferWidth - 384 - stringSize.X - 200 - stringSize2.X, 10), Color.Black);
             m_spriteBatch.End();
         }
 
@@ -565,22 +640,24 @@ namespace CS5410
             waIRenderer.update(gameTime);
             gWRenderer.update(gameTime);
             pointerRenderer.update(gameTime);
+            hWRenderer.update(gameTime);
+            dFRenderer.update(gameTime);
 
             // update our mouse input
             m_inputMouse.Update(gameTime);
 
             // if our time since an error is greater than or equal to 100 ms, we can place a tower again
-            if((DateTime.Now-errorTime).TotalMilliseconds >= 100)
+            if ((DateTime.Now - errorTime).TotalMilliseconds >= 100)
             {
                 canPlace = true;
             }
 
             // if we have placed a tower, recompute shortest path for each creep
-            if(towerPlaced)
+            if (towerPlaced)
             {
-                for (int i = 0; i < creeps.Count; i++)
+                for (int i = 0; i < goblins.Count; i++)
                 {
-                    findPath2(creeps[i]);
+                    findPath2(goblins[i]);
                 }
 
                 towerPlaced = false;
@@ -593,132 +670,422 @@ namespace CS5410
                 // if our last creep came in over a second ago, add a new creep
                 if ((DateTime.Now - lastCreep).TotalSeconds >= 1)
                 {
-                    creeps.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery+64), 1, 50));
-                    findPath2(creeps.Last());
+                    //if(waveEnded)
+                    //{
+                        //if((DateTime.Now-waveTime).TotalSeconds >= 10)
+                        //{
+                            //waveEnded = false;
+                        //}
+                    //}
+                    if(wave == 0)
+                    {
+                        if (totalGoblins < creepsPerWave[level][wave])
+                        {
+                            totalGoblins++;
+                            goblins.Add(new Objects.Goblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery + 64), 1, 50));
+                            findPath2(goblins.Last());
+                        }
+                        else
+                        {
+                            waveTime = DateTime.Now;
+                            waveEnded = true;
+                            wave++;
+                        }
+                    }
+                    else if(wave == 1)
+                    {
+                        if (totalHobGoblins < creepsPerWave[level][wave])
+                        {
+                            totalHobGoblins++;
+                            hobgoblins.Add(new Objects.Hobgoblin(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery + 64), 1, 100));
+                            findPath2(hobgoblins.Last());
+                        }
+                        else
+                        {
+                            waveTime = DateTime.Now;
+                            waveEnded = true;
+                            wave++;
+                        }
+                    }
+                    else if(wave == 2)
+                    {
+                        if (totalDragons < creepsPerWave[level][wave])
+                        {
+                            totalDragons++;
+                            dragons.Add(new Objects.Dragon(new Vector2(64, 64), new Vector2(board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centerx, board[(int)startingLocations[level].Y, (int)startingLocations[level].X].m_centery + 64), 1, 150));
+                            findPath2(dragons.Last());
+                        }
+                        else
+                        {
+                            if (dragons.Count == 0)
+                            {
+                                waveTime = DateTime.Now;
+                                waveEnded = true;
+                                wave = 0;
+                                levelStarted = false;
+                                level++;
+                            }
+                        }
+                    }
+                    
                     lastCreep = DateTime.Now;
                 }
                 // for each of our creeps, move
-                for (int i = 0; i < creeps.Count; i++)
+                for (int i = 0; i < goblins.Count; i++)
                 {
-                    if(creeps[i].Center.X == 63)
-                    {
-
-                    }
                     // if our creep has not reached the last element of the path
-                    if (creeps[i].location != creeps[i].shortestPath.Count-1)
+                    if (goblins[i].location != goblins[i].shortestPath.Count - 1)
                     {
                         // if the creep's location is greater than our shortest path, we have recomputed the path. break and set location to 0
-                        if (creeps[i].location + 1 > creeps[i].shortestPath.Count)
+                        if (goblins[i].location + 1 > goblins[i].shortestPath.Count)
                         {
-                            creeps[i].location = 0;
+                            goblins[i].location = 0;
                             break;
                         }
                         else
                         {
                             // get the creep's next cell to go to
-                            Objects.GameCell next = creeps[i].shortestPath[creeps[i].location + 1];
+                            Objects.GameCell next = goblins[i].shortestPath[goblins[i].location + 1];
                             // if our next cell has a greater x, increase our creep's x
-                            if (next.m_centerx > creeps[i].Center.X)
+                            if (next.m_centerx > goblins[i].Center.X)
                             {
-                                double left = (2 * Math.PI) - creeps[i].Rotation;
-                                if (creeps[i].Rotation >= 0 + .5 || creeps[i].Rotation <= 0 - .5)
+                                double left = (2 * Math.PI) - goblins[i].Rotation;
+                                if (goblins[i].Rotation >= 0 + .5 || goblins[i].Rotation <= 0 - .5)
                                 {
-                                    if (left < creeps[i].Rotation)
+                                    if (left < goblins[i].Rotation)
                                     {
-                                        creeps[i].Rotation += .1f;
-                                        if(creeps[i].Rotation >= (2*Math.PI)+.5 || creeps[i].Rotation >= (2*Math.PI)-.5)
+                                        goblins[i].Rotation += .1f;
+                                        if (goblins[i].Rotation >= (2 * Math.PI) + .5 || goblins[i].Rotation >= (2 * Math.PI) - .5)
                                         {
-                                            creeps[i].Rotation = 0;
+                                            goblins[i].Rotation = 0;
                                         }
                                     }
                                     else
                                     {
-                                        creeps[i].Rotation -= .1f;
+                                        goblins[i].Rotation -= .1f;
                                     }
                                 }
                                 else
                                 {
-                                    creeps[i].increaseX(1);
+                                    goblins[i].increaseX(1);
                                 }
                                 //creeps[i].Rotation = 0;
                             }
                             // if our next cell has a smaller x, decrease our creeps x
-                            if (next.m_centerx < creeps[i].Center.X)
+                            if (next.m_centerx < goblins[i].Center.X)
                             {
-                                double left = (Math.PI) - creeps[i].Rotation;
-                                double right = creeps[i].Rotation - Math.PI;
-                                if (creeps[i].Rotation >= Math.PI + .5 || creeps[i].Rotation <= Math.PI - .5)
+                                double left = (Math.PI) - goblins[i].Rotation;
+                                double right = goblins[i].Rotation - Math.PI;
+                                if (goblins[i].Rotation >= Math.PI + .5 || goblins[i].Rotation <= Math.PI - .5)
                                 {
                                     if (left < right)
                                     {
-                                        creeps[i].Rotation += .1f;
+                                        goblins[i].Rotation += .1f;
                                     }
                                     else
                                     {
-                                        creeps[i].Rotation -= .1f;
+                                        goblins[i].Rotation -= .1f;
                                     }
                                 }
                                 else
                                 {
-                                    creeps[i].increaseX(-1);
+                                    goblins[i].increaseX(-1);
                                 }
                             }
                             // if our next cell has a greater y, increase our creeps y
-                            if (next.m_centery > creeps[i].Center.Y-64)
+                            if (next.m_centery > goblins[i].Center.Y - 64)
                             {
-                                double left = ((Math.PI)/2) - creeps[i].Rotation;
-                                double right = creeps[i].Rotation - ((Math.PI) / 2);
-                                if (creeps[i].Rotation >= ((Math.PI) / 2) + .5 || creeps[i].Rotation <= ((Math.PI) / 2) - .5)
+                                double left = ((Math.PI) / 2) - goblins[i].Rotation;
+                                double right = goblins[i].Rotation - ((Math.PI) / 2);
+                                if (goblins[i].Rotation >= ((Math.PI) / 2) + .5 || goblins[i].Rotation <= ((Math.PI) / 2) - .5)
                                 {
                                     if (right < left)
                                     {
-                                        creeps[i].Rotation += .1f;
+                                        goblins[i].Rotation += .1f;
                                     }
                                     else
                                     {
-                                        creeps[i].Rotation -= .1f;
+                                        goblins[i].Rotation -= .1f;
                                     }
                                 }
                                 else
                                 {
-                                    creeps[i].increaseY(1);
+                                    goblins[i].increaseY(1);
                                 }
                             }
                             // if our next cell has a smaller y, decrease our creeps y
-                            if (next.m_centery < creeps[i].Center.Y-64)
+                            if (next.m_centery < goblins[i].Center.Y - 64)
                             {
-                                if (creeps[i].Rotation == 0)
+                                if (goblins[i].Rotation == 0)
                                 {
-                                    creeps[i].Rotation = (float)(2 * Math.PI);
+                                    goblins[i].Rotation = (float)(2 * Math.PI);
                                 }
-                                double left = ((3*Math.PI) / 2) - creeps[i].Rotation;
-                                double right = creeps[i].Rotation - ((3*Math.PI) / 2);
-                                if (creeps[i].Rotation >= ((3*Math.PI) / 2) + .5 || creeps[i].Rotation <= ((3*Math.PI) / 2) - .5)
+                                double left = ((3 * Math.PI) / 2) - goblins[i].Rotation;
+                                double right = goblins[i].Rotation - ((3 * Math.PI) / 2);
+                                if (goblins[i].Rotation >= ((3 * Math.PI) / 2) + .5 || goblins[i].Rotation <= ((3 * Math.PI) / 2) - .5)
                                 {
                                     if (right < left)
                                     {
-                                        creeps[i].Rotation += .1f;
+                                        goblins[i].Rotation += .1f;
                                     }
                                     else
                                     {
-                                        creeps[i].Rotation -= .1f;
+                                        goblins[i].Rotation -= .1f;
                                     }
                                 }
                                 else
                                 {
-                                    creeps[i].increaseY(-1);
+                                    goblins[i].increaseY(-1);
                                 }
                             }
                             // otherwise, our creep has reached the next cell, update it's location in our path
-                            if(next.m_centerx == creeps[i].Center.X && next.m_centery == creeps[i].Center.Y-64)
+                            if (next.m_centerx == goblins[i].Center.X && next.m_centery == goblins[i].Center.Y - 64)
                             {
-                                creeps[i].location++;
+                                goblins[i].location++;
                             }
                         }
                     }
                     else
                     {
-                        creeps.RemoveAt(i);
+                        goblins.RemoveAt(i);
+                    }
+                }
+                for (int i = 0; i < hobgoblins.Count; i++)
+                {
+                    // if our creep has not reached the last element of the path
+                    if (hobgoblins[i].location != hobgoblins[i].shortestPath.Count - 1)
+                    {
+                        // if the creep's location is greater than our shortest path, we have recomputed the path. break and set location to 0
+                        if (hobgoblins[i].location + 1 > hobgoblins[i].shortestPath.Count)
+                        {
+                            hobgoblins[i].location = 0;
+                            break;
+                        }
+                        else
+                        {
+                            // get the creep's next cell to go to
+                            Objects.GameCell next = hobgoblins[i].shortestPath[hobgoblins[i].location + 1];
+                            // if our next cell has a greater x, increase our creep's x
+                            if (next.m_centerx > hobgoblins[i].Center.X)
+                            {
+                                double left = (2 * Math.PI) - hobgoblins[i].Rotation;
+                                if (hobgoblins[i].Rotation >= 0 + .5 || hobgoblins[i].Rotation <= 0 - .5)
+                                {
+                                    if (left < hobgoblins[i].Rotation)
+                                    {
+                                        hobgoblins[i].Rotation += .1f;
+                                        if (hobgoblins[i].Rotation >= (2 * Math.PI) + .5 || hobgoblins[i].Rotation >= (2 * Math.PI) - .5)
+                                        {
+                                            hobgoblins[i].Rotation = 0;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        hobgoblins[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    hobgoblins[i].increaseX(1);
+                                }
+                                //creeps[i].Rotation = 0;
+                            }
+                            // if our next cell has a smaller x, decrease our creeps x
+                            if (next.m_centerx < hobgoblins[i].Center.X)
+                            {
+                                double left = (Math.PI) - hobgoblins[i].Rotation;
+                                double right = hobgoblins[i].Rotation - Math.PI;
+                                if (hobgoblins[i].Rotation >= Math.PI + .5 || hobgoblins[i].Rotation <= Math.PI - .5)
+                                {
+                                    if (left < right)
+                                    {
+                                        hobgoblins[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        hobgoblins[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    hobgoblins[i].increaseX(-1);
+                                }
+                            }
+                            // if our next cell has a greater y, increase our creeps y
+                            if (next.m_centery > hobgoblins[i].Center.Y - 64)
+                            {
+                                double left = ((Math.PI) / 2) - hobgoblins[i].Rotation;
+                                double right = hobgoblins[i].Rotation - ((Math.PI) / 2);
+                                if (hobgoblins[i].Rotation >= ((Math.PI) / 2) + .5 || hobgoblins[i].Rotation <= ((Math.PI) / 2) - .5)
+                                {
+                                    if (right < left)
+                                    {
+                                        hobgoblins[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        hobgoblins[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    hobgoblins[i].increaseY(1);
+                                }
+                            }
+                            // if our next cell has a smaller y, decrease our creeps y
+                            if (next.m_centery < hobgoblins[i].Center.Y - 64)
+                            {
+                                if (hobgoblins[i].Rotation == 0)
+                                {
+                                    hobgoblins[i].Rotation = (float)(2 * Math.PI);
+                                }
+                                double left = ((3 * Math.PI) / 2) - hobgoblins[i].Rotation;
+                                double right = hobgoblins[i].Rotation - ((3 * Math.PI) / 2);
+                                if (hobgoblins[i].Rotation >= ((3 * Math.PI) / 2) + .5 || hobgoblins[i].Rotation <= ((3 * Math.PI) / 2) - .5)
+                                {
+                                    if (right < left)
+                                    {
+                                        hobgoblins[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        hobgoblins[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    hobgoblins[i].increaseY(-1);
+                                }
+                            }
+                            // otherwise, our creep has reached the next cell, update it's location in our path
+                            if (next.m_centerx == hobgoblins[i].Center.X && next.m_centery == hobgoblins[i].Center.Y - 64)
+                            {
+                                hobgoblins[i].location++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        hobgoblins.RemoveAt(i);
+                    }
+                }
+                for (int i = 0; i < dragons.Count; i++)
+                {
+                    // if our creep has not reached the last element of the path
+                    if (dragons[i].location != dragons[i].shortestPath.Count - 1)
+                    {
+                        // if the creep's location is greater than our shortest path, we have recomputed the path. break and set location to 0
+                        if (dragons[i].location + 1 > dragons[i].shortestPath.Count)
+                        {
+                            dragons[i].location = 0;
+                            break;
+                        }
+                        else
+                        {
+                            // get the creep's next cell to go to
+                            Objects.GameCell next = dragons[i].shortestPath[dragons[i].location + 1];
+                            // if our next cell has a greater x, increase our creep's x
+                            if (next.m_centerx > dragons[i].Center.X)
+                            {
+                                double left = (2 * Math.PI) - dragons[i].Rotation;
+                                if (dragons[i].Rotation >= 0 + .5 || dragons[i].Rotation <= 0 - .5)
+                                {
+                                    if (left < dragons[i].Rotation)
+                                    {
+                                        dragons[i].Rotation += .1f;
+                                        if (dragons[i].Rotation >= (2 * Math.PI) + .5 || dragons[i].Rotation >= (2 * Math.PI) - .5)
+                                        {
+                                            dragons[i].Rotation = 0;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        dragons[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    dragons[i].increaseX(1);
+                                }
+                                //creeps[i].Rotation = 0;
+                            }
+                            // if our next cell has a smaller x, decrease our creeps x
+                            if (next.m_centerx < dragons[i].Center.X)
+                            {
+                                double left = (Math.PI) - dragons[i].Rotation;
+                                double right = dragons[i].Rotation - Math.PI;
+                                if (dragons[i].Rotation >= Math.PI + .5 || dragons[i].Rotation <= Math.PI - .5)
+                                {
+                                    if (left < right)
+                                    {
+                                        dragons[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        dragons[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    dragons[i].increaseX(-1);
+                                }
+                            }
+                            // if our next cell has a greater y, increase our creeps y
+                            if (next.m_centery > dragons[i].Center.Y - 64)
+                            {
+                                double left = ((Math.PI) / 2) - dragons[i].Rotation;
+                                double right = dragons[i].Rotation - ((Math.PI) / 2);
+                                if (dragons[i].Rotation >= ((Math.PI) / 2) + .5 || dragons[i].Rotation <= ((Math.PI) / 2) - .5)
+                                {
+                                    if (right < left)
+                                    {
+                                        dragons[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        dragons[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    dragons[i].increaseY(1);
+                                }
+                            }
+                            // if our next cell has a smaller y, decrease our creeps y
+                            if (next.m_centery < dragons[i].Center.Y - 64)
+                            {
+                                if (dragons[i].Rotation == 0)
+                                {
+                                    dragons[i].Rotation = (float)(2 * Math.PI);
+                                }
+                                double left = ((3 * Math.PI) / 2) - dragons[i].Rotation;
+                                double right = dragons[i].Rotation - ((3 * Math.PI) / 2);
+                                if (dragons[i].Rotation >= ((3 * Math.PI) / 2) + .5 || dragons[i].Rotation <= ((3 * Math.PI) / 2) - .5)
+                                {
+                                    if (right < left)
+                                    {
+                                        dragons[i].Rotation += .1f;
+                                    }
+                                    else
+                                    {
+                                        dragons[i].Rotation -= .1f;
+                                    }
+                                }
+                                else
+                                {
+                                    dragons[i].increaseY(-1);
+                                }
+                            }
+                            // otherwise, our creep has reached the next cell, update it's location in our path
+                            if (next.m_centerx == dragons[i].Center.X && next.m_centery == dragons[i].Center.Y - 64)
+                            {
+                                dragons[i].location++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        dragons.RemoveAt(i);
                     }
                 }
                 for (int i = 0; i < fighterIdle.Count; i++)
@@ -744,15 +1111,27 @@ namespace CS5410
                         }
                         if (((Objects.Fighter)fighterIdle[i]).canSwipe())
                         {
-                            if(fighterIdle[i].Rotation <= angle + .5 && fighterIdle[i].Rotation >= angle - .5)
+                            if (fighterIdle[i].Rotation <= angle + .5 && fighterIdle[i].Rotation >= angle - .5)
                             {
                                 fighterIdle[i].target.m_health -= ((Objects.Fighter)fighterIdle[i]).damage;
                             }
                             if (fighterIdle[i].target.m_health <= 0)
                             {
-                                scores.Add(new Objects.Score(new Vector2(16, 16), fighterIdle[i].target.Center, 100));
-                                player.addToScore(100);
-                                creeps.Remove(fighterIdle[i].target);
+                                
+                                if (fighterIdle[i].target is Objects.Goblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), fighterIdle[i].target.Center, 100));
+                                    player.addToScore(105);
+                                    player.addMoney(5);
+                                    goblins.Remove(fighterIdle[i].target);
+                                }
+                                else if(fighterIdle[i].target is Objects.Hobgoblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), fighterIdle[i].target.Center, 200));
+                                    player.addToScore(210);
+                                    player.addMoney(10);
+                                    hobgoblins.Remove(fighterIdle[i].target);
+                                }
                                 fighterIdle[i].target = null;
 
                             }
@@ -761,7 +1140,7 @@ namespace CS5410
                 }
                 for (int i = 0; i < wizardIdle.Count; i++)
                 {
-                    if(findTarget(wizardIdle[i])) 
+                    if (findTarget(wizardIdle[i]))
                     {
                         double angle;
                         if (wizardIdle[i].target.Center.X < wizardIdle[i].Center.X)
@@ -775,21 +1154,33 @@ namespace CS5410
                         if (wizardIdle[i].Rotation >= angle + .5 || wizardIdle[i].Rotation <= angle - .5)
                         {
                             wizardIdle[i].Rotation += .1f;
-                            if(wizardIdle[i].Rotation <= (2*Math.PI)+.5 && wizardIdle[i].Rotation >= (2*Math.PI)-.5) {
+                            if (wizardIdle[i].Rotation <= (2 * Math.PI) + .5 && wizardIdle[i].Rotation >= (2 * Math.PI) - .5)
+                            {
                                 wizardIdle[i].Rotation = 0;
                             }
                         }
                         if (((Objects.Wizard)wizardIdle[i]).canFire())
                         {
-                            if(wizardIdle[i].Rotation <= angle + .5 && wizardIdle[i].Rotation >= angle - .5)
+                            if (wizardIdle[i].Rotation <= angle + .5 && wizardIdle[i].Rotation >= angle - .5)
                             {
                                 wizardIdle[i].target.m_health -= ((Objects.Wizard)wizardIdle[i]).damage;
                             }
                             if (wizardIdle[i].target.m_health <= 0)
                             {
-                                scores.Add(new Objects.Score(new Vector2(16, 16), wizardIdle[i].target.Center, 100));
-                                player.addToScore(100);
-                                creeps.Remove(wizardIdle[i].target);
+                                if (wizardIdle[i].target is Objects.Goblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), wizardIdle[i].target.Center, 100));
+                                    player.addToScore(105);
+                                    player.addMoney(5);
+                                    goblins.Remove(wizardIdle[i].target);
+                                }
+                                else if (wizardIdle[i].target is Objects.Hobgoblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), wizardIdle[i].target.Center, 200));
+                                    player.addToScore(210);
+                                    player.addMoney(10);
+                                    hobgoblins.Remove(wizardIdle[i].target);
+                                }
                                 wizardIdle[i].target = null;
                             }
                         }
@@ -824,9 +1215,27 @@ namespace CS5410
                             }
                             if (rangerIdle[i].target.m_health <= 0)
                             {
-                                scores.Add(new Objects.Score(new Vector2(16, 16), rangerIdle[i].target.Center, 100));
-                                player.addToScore(100);
-                                creeps.Remove(rangerIdle[i].target);
+                                if (rangerIdle[i].target is Objects.Goblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), rangerIdle[i].target.Center, 100));
+                                    player.addToScore(105);
+                                    player.addMoney(5);
+                                    goblins.Remove(rangerIdle[i].target);
+                                }
+                                else if (rangerIdle[i].target is Objects.Hobgoblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), rangerIdle[i].target.Center, 200));
+                                    player.addToScore(210);
+                                    player.addMoney(10);
+                                    hobgoblins.Remove(rangerIdle[i].target);
+                                }
+                                else
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), rangerIdle[i].target.Center, 300));
+                                    player.addToScore(315);
+                                    player.addMoney(15);
+                                    dragons.Remove(rangerIdle[i].target);
+                                }
                                 rangerIdle[i].target = null;
                             }
                         }
@@ -862,9 +1271,27 @@ namespace CS5410
                             }
                             if (warlockIdle[i].target.m_health <= 0)
                             {
-                                scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 100));
-                                player.addToScore(100);
-                                creeps.Remove(warlockIdle[i].target);
+                                if (warlockIdle[i].target is Objects.Goblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 100));
+                                    player.addToScore(105);
+                                    player.addMoney(5);
+                                    goblins.Remove(warlockIdle[i].target);
+                                }
+                                else if (warlockIdle[i].target is Objects.Hobgoblin)
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 200));
+                                    player.addToScore(210);
+                                    player.addMoney(10);
+                                    hobgoblins.Remove(warlockIdle[i].target);
+                                }
+                                else
+                                {
+                                    scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 300));
+                                    player.addToScore(315);
+                                    player.addMoney(15);
+                                    dragons.Remove(warlockIdle[i].target);
+                                }
                                 warlockIdle[i].target = null;
                             }
                         }
@@ -897,8 +1324,9 @@ namespace CS5410
                             if (warlockIdle[i].target.m_health <= 0)
                             {
                                 scores.Add(new Objects.Score(new Vector2(16, 16), warlockIdle[i].target.Center, 100));
-                                player.addToScore(100);
-                                creeps.Remove(warlockIdle[i].target);
+                                player.addToScore(105);
+                                player.addMoney(5);
+                                goblins.Remove(warlockIdle[i].target);
                                 warlockIdle[i].target = null;
                             }
                         }
@@ -907,47 +1335,51 @@ namespace CS5410
             }
 
             // if we are trying to upgrade a tower
-            if(upgrading)
+            if (upgrading)
             {
                 // check that we have clicked an object
                 if (clicked != null)
                 {
                     // if our object is a fighter and we have enough money, update depending on level
-                    if(clicked is Objects.Fighter && player.getMoney() - 5 >= 0)
+                    if (clicked is Objects.Fighter && player.getMoney() - 5 >= 0)
                     {
                         if (clicked.level == 1)
                         {
                             ((Objects.Fighter)clicked).damage = 20;
                             ((Objects.Fighter)clicked).m_swipeRate = 12;
                             player.addMoney(-5);
+                            player.addToScore(5);
                             clicked.level++;
                         }
-                        else if(clicked.level == 2)
+                        else if (clicked.level == 2)
                         {
                             ((Objects.Fighter)clicked).damage = 25;
                             ((Objects.Fighter)clicked).m_swipeRate = 15;
                             ((Objects.Fighter)clicked).m_radius = 4;
                             player.addMoney(-5);
+                            player.addToScore(5);
                             clicked.level++;
                         }
                         clicked = null;
                     }
                     // if our object is a wizard and we have enough money, update depending on level
-                    if(clicked is Objects.Wizard)
+                    if (clicked is Objects.Wizard)
                     {
-                        if (clicked.level == 1 && player.getMoney()-2 >= 0)
+                        if (clicked.level == 1 && player.getMoney() - 2 >= 0)
                         {
                             ((Objects.Wizard)clicked).damage = 15;
                             ((Objects.Wizard)clicked).m_fireRate = 4;
                             player.addMoney(-2);
+                            player.addToScore(2);
                             clicked.level++;
                         }
-                        else if(clicked.level == 2 && player.getMoney() - 3 >= 0)
+                        else if (clicked.level == 2 && player.getMoney() - 3 >= 0)
                         {
                             ((Objects.Wizard)clicked).damage = 20;
                             ((Objects.Wizard)clicked).m_fireRate = 10;
                             ((Objects.Wizard)clicked).m_radius = 6;
                             player.addMoney(-3);
+                            player.addToScore(3);
                             clicked.level++;
                         }
                         clicked = null;
@@ -960,6 +1392,7 @@ namespace CS5410
                             ((Objects.Ranger)clicked).damage = 12;
                             ((Objects.Ranger)clicked).m_fireRate = 7;
                             player.addMoney(-2);
+                            player.addToScore(2);
                             clicked.level++;
                         }
                         else if (clicked.level == 2 && player.getMoney() - 3 >= 0)
@@ -968,6 +1401,7 @@ namespace CS5410
                             ((Objects.Ranger)clicked).m_fireRate = 10;
                             ((Objects.Ranger)clicked).m_radius = 7;
                             player.addMoney(-3);
+                            player.addToScore(3);
                             clicked.level++;
                         }
                         clicked = null;
@@ -980,6 +1414,7 @@ namespace CS5410
                             ((Objects.Warlock)clicked).damage = 12;
                             ((Objects.Warlock)clicked).m_fireRate = 5;
                             player.addMoney(-2);
+                            player.addToScore(2);
                             clicked.level++;
                         }
                         else if (clicked.level == 2 && player.getMoney() - 3 >= 0)
@@ -989,6 +1424,7 @@ namespace CS5410
                             ((Objects.Warlock)clicked).m_mradius = 7;
                             ((Objects.Warlock)clicked).m_bradius = 4;
                             player.addMoney(-3);
+                            player.addToScore(3);
                             clicked.level++;
                         }
                         clicked = null;
@@ -997,15 +1433,30 @@ namespace CS5410
                 upgrading = false;
             }
 
-            if(selling)
+            if (selling)
             {
-                if(clicked != null)
+                if (clicked != null)
                 {
-                    if(clicked is Objects.Fighter)
+                    if (clicked is Objects.Fighter)
                     {
                         fighterIdle.Remove(clicked);
                         int x = (int)(clicked.Center.X - 32) / 64;
                         int y = (int)(clicked.Center.Y - 32) / 64;
+                        if(clicked.level == 1)
+                        {
+                            player.addMoney(5);
+                            player.addToScore(-5);
+                        }
+                        else if(clicked.level == 2)
+                        {
+                            player.addMoney(10);
+                            player.addToScore(-10);
+                        }
+                        else
+                        {
+                            player.addMoney(15);
+                            player.addToScore(-15);
+                        }
                         board[y, x].setObject(null);
                     }
                     else if (clicked is Objects.Wizard)
@@ -1013,6 +1464,21 @@ namespace CS5410
                         wizardIdle.Remove(clicked);
                         int x = (int)(clicked.Center.X - 32) / 64;
                         int y = (int)(clicked.Center.Y - 32) / 64;
+                        if (clicked.level == 1)
+                        {
+                            player.addMoney(15);
+                            player.addToScore(-15);
+                        }
+                        else if (clicked.level == 2)
+                        {
+                            player.addMoney(17);
+                            player.addToScore(-17);
+                        }
+                        else
+                        {
+                            player.addMoney(20);
+                            player.addToScore(-20);
+                        }
                         board[y, x].setObject(null);
                     }
                     else if (clicked is Objects.Ranger)
@@ -1020,6 +1486,21 @@ namespace CS5410
                         rangerIdle.Remove(clicked);
                         int x = (int)(clicked.Center.X - 32) / 64;
                         int y = (int)(clicked.Center.Y - 32) / 64;
+                        if (clicked.level == 1)
+                        {
+                            player.addMoney(15);
+                            player.addToScore(-15);
+                        }
+                        else if (clicked.level == 2)
+                        {
+                            player.addMoney(17);
+                            player.addToScore(-17);
+                        }
+                        else
+                        {
+                            player.addMoney(20);
+                            player.addToScore(-20);
+                        }
                         board[y, x].setObject(null);
                     }
                     else if (clicked is Objects.Warlock)
@@ -1027,12 +1508,27 @@ namespace CS5410
                         warlockIdle.Remove(clicked);
                         int x = (int)(clicked.Center.X - 32) / 64;
                         int y = (int)(clicked.Center.Y - 32) / 64;
+                        if (clicked.level == 1)
+                        {
+                            player.addMoney(20);
+                            player.addToScore(-20);
+                        }
+                        else if (clicked.level == 2)
+                        {
+                            player.addMoney(22);
+                            player.addToScore(-22);
+                        }
+                        else
+                        {
+                            player.addMoney(25);
+                            player.addToScore(-25);
+                        }
                         board[y, x].setObject(null);
                     }
                     clicked = null;
-                    for (int i = 0; i < creeps.Count; i++)
+                    for (int i = 0; i < goblins.Count; i++)
                     {
-                        findPath2(creeps[i]);
+                        findPath2(goblins[i]);
                     }
                 }
                 selling = false;
@@ -1052,6 +1548,7 @@ namespace CS5410
                     {
                         placingFighter = true;
                         player.addMoney(-5);
+                        player.addToScore(5);
                     }
                 }
 
@@ -1064,6 +1561,7 @@ namespace CS5410
                     {
                         placingWizard = true;
                         player.addMoney(-15);
+                        player.addToScore(15);
                     }
                 }
             }
@@ -1075,6 +1573,7 @@ namespace CS5410
                     {
                         placingRanger = true;
                         player.addMoney(-15);
+                        player.addToScore(15);
                     }
                 }
             }
@@ -1086,6 +1585,7 @@ namespace CS5410
                     {
                         placingWarlock = true;
                         player.addMoney(-20);
+                        player.addToScore(20);
                     }
                 }
             }
@@ -1100,9 +1600,9 @@ namespace CS5410
                     bool valid = true;
                     Objects.Fighter toPlace = new Objects.Fighter(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 5, 1, 3);
                     board[row, column].setObject(toPlace);
-                    for (int i = 0; i < creeps.Count; i++)
+                    for (int i = 0; i < goblins.Count; i++)
                     {
-                        if(!isPath(creeps[i]))
+                        if (!isPath(goblins[i]))
                         {
                             valid = false;
                         }
@@ -1139,9 +1639,9 @@ namespace CS5410
                     bool valid = true;
                     Objects.Wizard toPlace = new Objects.Wizard(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 2, 1, 5);
                     board[row, column].setObject(toPlace);
-                    for (int i = 0; i < creeps.Count; i++)
+                    for (int i = 0; i < goblins.Count; i++)
                     {
-                        if (!isPath(creeps[i]))
+                        if (!isPath(goblins[i]))
                         {
                             valid = false;
                         }
@@ -1178,9 +1678,9 @@ namespace CS5410
                     bool valid = true;
                     Objects.Ranger toPlace = new Objects.Ranger(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 5, 1, 6);
                     board[row, column].setObject(toPlace);
-                    for (int i = 0; i < creeps.Count; i++)
+                    for (int i = 0; i < goblins.Count; i++)
                     {
-                        if (!isPath(creeps[i]))
+                        if (!isPath(goblins[i]))
                         {
                             valid = false;
                         }
@@ -1216,9 +1716,9 @@ namespace CS5410
                     bool valid = true;
                     Objects.Warlock toPlace = new Objects.Warlock(new Vector2(64, 64), new Vector2(board[row, column].m_centerx + 32, board[row, column].m_centery + 64), 2, 2, 1, 6, 3);
                     board[row, column].setObject(toPlace);
-                    for (int i = 0; i < creeps.Count; i++)
+                    for (int i = 0; i < goblins.Count; i++)
                     {
-                        if (!isPath(creeps[i]))
+                        if (!isPath(goblins[i]))
                         {
                             valid = false;
                         }
@@ -1246,11 +1746,11 @@ namespace CS5410
                 }
             }
             // if we have clicked a valid square in the grid, if there is an object, set it as our clicked object
-            else if(x < m_graphics.PreferredBackBufferWidth-384)
+            else if (x < m_graphics.PreferredBackBufferWidth - 384)
             {
                 int row = y / 64;
                 int column = x / 64;
-                if(board[row, column].getObject() != null)
+                if (board[row, column].getObject() != null)
                 {
                     clicked = board[row, column].getObject();
                 }
@@ -1268,11 +1768,11 @@ namespace CS5410
         {
             //if (m_mouseCapture && placingFighter)
             //{
-                //fighterIdle.setX(x);
-                //fighterIdle.setY(y);
+            //fighterIdle.setX(x);
+            //fighterIdle.setY(y);
             //}
             // get position mouse has moved to to render radius circle
-            if(placingFighter || placingWizard || placingRanger || placingWarlock)
+            if (placingFighter || placingWizard || placingRanger || placingWarlock)
             {
                 placingPos = new Vector2(x, y);
             }
@@ -1311,7 +1811,7 @@ namespace CS5410
                 // get the first object of queue and remove it
                 Objects.GameCell curr = q[0];
                 q.RemoveAt(0);
-                
+
                 // if our distance from the current cell is greater than 1, we have not reached our destination
                 if (curr != board[(int)endingLocations[level].Y, (int)endingLocations[level].X])
                 {
@@ -1404,7 +1904,7 @@ namespace CS5410
             List<Objects.GameCell> q = new List<Objects.GameCell>();
             q.Add(board[(int)start.Y, (int)start.X]);
 
-            while(q.Count > 0)
+            while (q.Count > 0)
             {
                 Objects.GameCell current = q[0];
                 q.RemoveAt(0);
@@ -1425,7 +1925,7 @@ namespace CS5410
                     {
                         int x = (current.m_originx + 64) / 64;
                         int y = current.m_originy / 64;
-                        if(!board[y, x].visited && board[y, x].getObject() == null)
+                        if (!board[y, x].visited && board[y, x].getObject() == null)
                         {
                             int tempDist = Math.Abs((int)(dest.X - x)) + Math.Abs((int)(dest.Y - y));
                             board[y, x].m_distance = tempDist;
@@ -1472,36 +1972,78 @@ namespace CS5410
 
         bool findTarget(Objects.AnimatedSprite tower)
         {
-            for (int i = 0; i < creeps.Count; i++)
+            for (int i = 0; i < goblins.Count; i++)
             {
                 if (!(tower is Objects.Warlock))
                 {
-                    if (tower.doIntersect(new Vector2(creeps[i].Center.X - 32, creeps[i].Center.Y - 32), new Vector2(64, 64)))
+                    if (tower.doIntersect(new Vector2(goblins[i].Center.X - 32, goblins[i].Center.Y - 32), new Vector2(64, 64)))
                     {
-                        tower.target = creeps[i];
+                        tower.target = goblins[i];
                         return true;
-                    }
-                    else
-                    {
-                        return false;
                     }
                 }
                 else
                 {
                     Objects.Warlock warlockTower = (Objects.Warlock)tower;
-                    if (warlockTower.doIntersectMissiles(new Vector2(creeps[i].Center.X - 32, creeps[i].Center.Y - 32), new Vector2(64, 64)))
+                    if (warlockTower.doIntersectMissiles(new Vector2(goblins[i].Center.X - 32, goblins[i].Center.Y - 32), new Vector2(64, 64)))
                     {
-                        tower.target = creeps[i];
+                        tower.target = goblins[i];
                         return true;
                     }
-                    else if (warlockTower.doIntersectBombs(new Vector2(creeps[i].Center.X - 32, creeps[i].Center.Y - 32), new Vector2(64, 64)))
+                    else if (warlockTower.doIntersectBombs(new Vector2(goblins[i].Center.X - 32, goblins[i].Center.Y - 32), new Vector2(64, 64)))
                     {
-                        tower.target = creeps[i];
+                        tower.target = goblins[i];
                         return true;
                     }
-                    else
+                }
+            }
+            for (int i = 0; i < hobgoblins.Count; i++)
+            {
+                if (!(tower is Objects.Warlock))
+                {
+                    if (tower.doIntersect(new Vector2(hobgoblins[i].Center.X - 32, hobgoblins[i].Center.Y - 32), new Vector2(64, 64)))
                     {
-                        return false;
+                        tower.target = hobgoblins[i];
+                        return true;
+                    }
+                }
+                else
+                {
+                    Objects.Warlock warlockTower = (Objects.Warlock)tower;
+                    if (warlockTower.doIntersectMissiles(new Vector2(hobgoblins[i].Center.X - 32, hobgoblins[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = hobgoblins[i];
+                        return true;
+                    }
+                    else if (warlockTower.doIntersectBombs(new Vector2(hobgoblins[i].Center.X - 32, hobgoblins[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = hobgoblins[i];
+                        return true;
+                    }
+                }
+            }
+            for (int i = 0; i < dragons.Count; i++)
+            {
+                if (tower is Objects.Ranger)
+                {
+                    if (tower.doIntersect(new Vector2(dragons[i].Center.X - 32, dragons[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = dragons[i];
+                        return true;
+                    }
+                }
+                else if (tower is Objects.Warlock)
+                {
+                    Objects.Warlock warlockTower = (Objects.Warlock)tower;
+                    if (warlockTower.doIntersectMissiles(new Vector2(dragons[i].Center.X - 32, dragons[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = dragons[i];
+                        return true;
+                    }
+                    else if (warlockTower.doIntersectBombs(new Vector2(dragons[i].Center.X - 32, dragons[i].Center.Y - 32), new Vector2(64, 64)))
+                    {
+                        tower.target = dragons[i];
+                        return true;
                     }
                 }
             }
